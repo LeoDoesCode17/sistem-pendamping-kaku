@@ -19,7 +19,7 @@ export default function Time() {
 
   return (
     <div className='flex items-center gap-3 bg-[#992B1D] px-3 py-1 rounded-xl border-2 border-cream'>
-      <div className="text-[#F7D692] flex items-center gap-2">
+      <div className="text-cream flex items-center gap-2">
         <Clock></Clock>
         <div className="text-2xl font-bold">{timeString}</div>
       </div>
