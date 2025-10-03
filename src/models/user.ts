@@ -21,4 +21,20 @@ export class User {
     this.role = params.role;
     this.outlet = params.outlet;
   }
+
+  static fromFirestore(data: {
+    id: string;
+    email: string;
+    name: string;
+    role: Role;
+    outlet: Outlet;
+  }): User {
+    return new User({
+      id: data.id,
+      email: data.email,
+      name: data.name,
+      role: data.role,
+      outlet: data.outlet,
+    });
+  }
 }
