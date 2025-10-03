@@ -15,13 +15,13 @@ export default function CashierPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="h-screen overflow-hidden bg-gray-100">
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12">
           {/* Catat Pesanan Button */}
           <button
             onClick={handleCatatPesanan}
-            className="bg-maroon rounded-2xl p-12 shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300 flex flex-col items-center justify-center min-h-[400px] group"
+            className="bg-maroon rounded-2xl p-12 shadow-2xl  flex flex-col items-center justify-center min-h-[400px] group"
           >
             <div className="bg-gray-200 rounded-full p-16 mb-8 group-hover:bg-white transition-colors duration-300">
               <FileEdit className="w-32 h-32 text-red-900" strokeWidth={1.5} />
@@ -34,7 +34,7 @@ export default function CashierPage() {
           {/* Riwayat Pesanan Button */}
           <button
             onClick={handleRiwayatPesanan}
-            className="bg-maroon rounded-2xl p-12 shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300 flex flex-col items-center justify-center min-h-[400px] group"
+            className="bg-maroon rounded-2xl p-12 shadow-2xl  flex flex-col items-center justify-center min-h-[400px] group"
           >
             <div className="bg-gray-200 rounded-full p-16 mb-8 group-hover:bg-white transition-colors duration-300">
               <Receipt className="w-32 h-32 text-red-900" strokeWidth={1.5} />
