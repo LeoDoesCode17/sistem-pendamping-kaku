@@ -9,7 +9,6 @@ export default function LoginPage() {
   const handleLogin = (role: string) => {
     document.cookie = `role=${role}; path=/`;
     
-    // Redirect berdasarkan role
     switch(role) {
       case 'cashier':
         router.push('/cashier');
@@ -26,9 +25,8 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      {/* <TopBar /> */}
-      <div className="flex items-center justify-center min-h-[calc(100vh-80px)] px-4">
+    <div className="h-screen overflow-hidden bg-gray-100">
+      <div className="flex items-center justify-center h-full px-4">
         <LoginForm onLogin={handleLogin} />
       </div>
     </div>
