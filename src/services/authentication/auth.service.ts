@@ -4,14 +4,13 @@ import { User } from "@/models/user";
 import { getUserById } from "../firestore/user-collection";
 
 export async function signInEmail(email: string, password: string): Promise<User | null> {
-  const cred = await signInWithEmailAndPassword(auth, email, password);
-  // fetch data from firestore and pass it to return User model
-  const userId = cred.user.uid;
   try {
-    const user = getUserById(userId);
-    return user;
-  }catch(err) {
-    console.error("Error to get user by id: ", err);
+    const cred = await signInWithEmailAndPassword(auth, email.trim(), password);
+    const userId = cred.user.uid;
+    const user = await getUserById(userId);
+    return user;  
+  }catch (err) {
+    console.error("signInEmail failed for email:", email, "error:", err);
     return null;
   }
 }
