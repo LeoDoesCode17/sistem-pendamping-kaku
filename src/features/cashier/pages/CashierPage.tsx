@@ -7,7 +7,7 @@ export default function CashierPage() {
   const router = useRouter();
 
   const handleCatatPesanan = () => {
-    router.push('/cashier/catat-pesanan');
+    router.push('/cashier/type-order');
   };
 
   const handleRiwayatPesanan = () => {
