@@ -1,6 +1,5 @@
-import ShopeeorderPage from '@/features/cashier/pages/ShopeeorderPage';
+import OrderPage from '@/features/orders/pages/OrderPage';
 
-export default function Page() {
-  return <ShopeeorderPage/>;
+export default function ShopeeFoodPage() {
+  return <OrderPage orderType="shopee-food" />;
 }
-
