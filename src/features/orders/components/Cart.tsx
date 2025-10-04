@@ -48,7 +48,7 @@ export default function Cart({
             {/* Cart Items */}
             <div className="space-y-4 mb-6">
                 {items.length === 0 ? (
-                    <div className="text-center py-12">
+                    <div className="bg-white rounded-lg border-2 text-center  py-12">
                         <svg
                             className="w-16 h-16 mx-auto mb-3 opacity-50"
                             fill="none"
@@ -68,7 +68,7 @@ export default function Cart({
                     items.map((item) => (
                         <div
                             key={item.id}
-                            className="bg-white rounded-lg p-4"
+                            className="bg-white rounded-lg p-4 border-2 border-black"
                         >
                             <div className="flex items-start justify-between mb-3">
                                 <h3 className="font-semibold flex-1 pr-2">{item.name}</h3>

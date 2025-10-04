@@ -39,14 +39,14 @@ export default function OrderHeader({ orderType, onDataChange }: OrderHeaderProp
     if (field === 'customerName') {
       return (
         <div key={field} className="flex-1">
-          <label className="block text-sm font-semibold text-red-900 mb-2">
+          <label className="block text-sm font-semibold text-maroon mb-2">
             {label}
           </label>
           <input
             type="text"
             value={formData.customerName}
             onChange={(e) => handleInputChange('customerName', e.target.value)}
-            className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-red-800"
+            className="w-full px-4 py-3 border-2 border-gray-400 rounded-lg focus:outline-none focus:border-maroon"
             placeholder="Masukkan nama"
           />
         </div>
@@ -56,14 +56,14 @@ export default function OrderHeader({ orderType, onDataChange }: OrderHeaderProp
     if (field === 'orderCode') {
       return (
         <div key={field} className="flex-1">
-          <label className="block text-sm font-semibold text-red-900 mb-2">
+          <label className="block text-sm font-semibold text-maroon mb-2">
             {label}
           </label>
           <input
             type="text"
             value={formData.orderCode}
             onChange={(e) => handleInputChange('orderCode', e.target.value)}
-            className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-red-800"
+            className="w-full px-4 py-3 border-2 border-gray-400 rounded-lg focus:outline-none focus:border-maroon"
             placeholder={config.prefix ? `${config.prefix}kode pesanan` : 'Masukkan kode'}
           />
         </div>
@@ -73,14 +73,14 @@ export default function OrderHeader({ orderType, onDataChange }: OrderHeaderProp
     if (field === 'phoneNumber') {
       return (
         <div key={field} className="flex-1">
-          <label className="block text-sm font-semibold text-red-900 mb-2">
+          <label className="block text-sm font-semibold text-maroon mb-2">
             {label}
           </label>
           <input
             type="tel"
             value={formData.phoneNumber}
             onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
-            className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-red-800"
+            className="w-full px-4 py-3 border-2 border-gray-400 rounded-lg focus:outline-none focus:border-maroon"
             placeholder="08xx xxxx xxxx"
           />
         </div>
@@ -91,7 +91,7 @@ export default function OrderHeader({ orderType, onDataChange }: OrderHeaderProp
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg border-2 border-gray-200 mb-6">
+    <div className="bg-white p-6 rounded-lg border-2 border-gray-400 mb-6">
       <div className="flex gap-4">
         {config.fields.map(renderField)}
       </div>

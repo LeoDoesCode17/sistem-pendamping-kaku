@@ -22,10 +22,10 @@ export default function CategoryFilter({ onCategoryChange }: CategoryFilterProps
         <button
           key={category.id}
           onClick={() => handleCategoryClick(category.id)}
-          className={`px-6 py-3 rounded-lg font-semibold text-base transition-colors ${
+          className={`px-6 py-3 rounded-lg font-semibold text-base transition-colors border-2 border-black  ${
             activeCategory === category.id
-              ? 'bg-red-900 text-white'
-              : 'bg-yellow-100 text-red-900 hover:bg-yellow-200'
+              ? 'bg-maroon text-cream'
+              : 'bg-cream text-maroon'
           }`}
         >
           {category.label}
