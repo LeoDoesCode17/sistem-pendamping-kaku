@@ -1,6 +1,5 @@
-import WaorderPage from '@/features/cashier/pages/WaorderPage';
+import OrderPage from '@/features/orders/pages/OrderPage';
 
-export default function Page() {
-  return <WaorderPage/>;
+export default function WaOrderPage() {
+  return <OrderPage orderType="wa-order" />;
 }
-

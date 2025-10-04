@@ -1,6 +1,5 @@
-import TakeawayorderPage from '@/features/cashier/pages/TakeawayorderPage';
+import OrderPage from '@/features/orders/pages/OrderPage';
 
-export default function Page() {
-  return <TakeawayorderPage/>;
+export default function TakeAwayPage() {
+  return <OrderPage orderType="take-away" />;
 }
-

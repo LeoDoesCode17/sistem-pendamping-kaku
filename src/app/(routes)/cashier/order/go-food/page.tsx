@@ -1,6 +1,5 @@
-import GojekorderPage from '@/features/cashier/pages/GojekorderPage';
+import OrderPage from '@/features/orders/pages/OrderPage';
 
-export default function Page() {
-  return <GojekorderPage/>;
+export default function GoFoodPage() {
+  return <OrderPage orderType="go-food" />;
 }
-

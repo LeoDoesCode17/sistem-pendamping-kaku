@@ -1,6 +1,5 @@
-import DineinorderPage from '@/features/cashier/pages/DineinorderPage';
+import OrderPage from '@/features/orders/pages/OrderPage';
 
-export default function Page() {
-  return <DineinorderPage/>;
+export default function DineInPage() {
+  return <OrderPage orderType="dine-in" />;
 }
-

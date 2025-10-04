@@ -23,8 +23,6 @@ export default function OrderTypePage() {
   ];
 
   const handleOrderTypeClick = (type: string) => {
-    // Default navigate ke /order/{type}. 
-    // Jika route real-mu berada di /cashier/order/{type} ganti jadi `/cashier/order/${type}`
     router.push(`/cashier/order/${type}`);
   };
 
@@ -42,7 +40,7 @@ export default function OrderTypePage() {
             aria-label={`Pilih ${type.name}`}
             className="
               bg-[#8B0000]
-              text-white
+              text-cream
               rounded-2xl
               p-5                 
               min-h-[140px]       
@@ -59,7 +57,7 @@ export default function OrderTypePage() {
               active:scale-[0.99]
             "
           >
-            <div className="bg-white/10 rounded-full p-3">
+            <div className="bg-maroon2 rounded-full p-3">
               {type.icon}
             </div>
 
