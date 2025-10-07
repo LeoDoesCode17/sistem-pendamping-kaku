@@ -8,6 +8,7 @@ export class Transaction {
   orderedMenus: OrderedMenu[];
   timeCreated: number | undefined;
   timeFinished: number | undefined;
+  isDone: boolean;
 
   constructor(params: {
     id: string;
@@ -16,6 +17,7 @@ export class Transaction {
     orderedMenus: OrderedMenu[];
     timeCreated: number | undefined;
     timeFinished: number | undefined;
+    isDone: boolean;
   }) {
     this.id = params.id;
     this.code = params.code;
@@ -23,6 +25,7 @@ export class Transaction {
     this.orderedMenus = params.orderedMenus;
     this.timeCreated = params.timeCreated;
     this.timeFinished = params.timeFinished;
+    this.isDone = params.isDone;
   }
 
   static fromJson(data: {
@@ -32,6 +35,7 @@ export class Transaction {
     orderedMenus: OrderedMenu[];
     timeCreated: number | undefined;
     timeFinished: number | undefined;
+    isDone: boolean;
   }): Transaction {
     return new Transaction({
       id: data.id,
@@ -40,6 +44,7 @@ export class Transaction {
       orderedMenus: data.orderedMenus,
       timeCreated: data.timeCreated,
       timeFinished: data.timeFinished,
+      isDone: data.isDone,
     });
   }
 
@@ -53,6 +58,7 @@ export class Transaction {
       quantity: number;
       customize: string | undefined;
     }[];
+    isDone: boolean
   } {
     return {
       id: this.id,
@@ -61,6 +67,7 @@ export class Transaction {
       orderedMenus: this.orderedMenus.map((orderedMenu) =>
         orderedMenu.toJson()
       ),
+      isDone: false,
     };
   }
 }
