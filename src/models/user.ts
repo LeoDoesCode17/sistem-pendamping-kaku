@@ -22,7 +22,7 @@ export class User {
     this.outlet = params.outlet;
   }
 
-  static fromFirestore(data: {
+  static fromJson(data: {
     id: string;
     email: string;
     name: string;
