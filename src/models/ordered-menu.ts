@@ -4,6 +4,7 @@ import { Outlet } from "./outlet";
 export class OrderedMenu {
   id: string;
   menu: Menu;
+  quantity: number;
   timeCreated: Date;
   timeFinished: Date;
   outlet: Outlet;
@@ -12,6 +13,7 @@ export class OrderedMenu {
   constructor(params: {
     id: string;
     menu: Menu;
+    quantity: number;
     timeCreated: Date;
     timeFinished: Date;
     outlet: Outlet;
@@ -23,5 +25,6 @@ export class OrderedMenu {
     this.timeFinished = params.timeFinished;
     this.outlet = params.outlet;
     this.customize = params.customize;
+    this.quantity = params.quantity;
   }
 }
