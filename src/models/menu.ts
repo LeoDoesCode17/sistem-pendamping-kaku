@@ -10,4 +10,12 @@ export class Menu {
     this.name = params.name;
     this.category = params.category;
   }
+
+  static fromFirestore(data: { id: string, name: string, category: MenuCategory}): Menu {
+    return new Menu({
+      id: data.id,
+      name: data.name,
+      category: data.category,
+    })
+  }
 }
