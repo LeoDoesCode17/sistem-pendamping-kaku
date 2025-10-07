@@ -1,10 +1,12 @@
 import {
+  collection,
   doc,
   getDoc,
+  getDocs,
 } from "firebase/firestore";
 import { firestore } from "@/lib/firebase";
 import { Menu } from "@/models/menu";
-import { getMenuCategoryById } from "./menu-category-collection";
+import { MenuCategory } from "@/types/menu-category";
 
 const COLLECTION_NAME = "menus";
 
@@ -18,17 +20,31 @@ export const getMenuById = async (id: string): Promise<Menu> => {
       throw new Error(msg);
     }
     const menuData = menuSnap.data();
-    const menuCategory = await getMenuCategoryById(menuData.category as string);
     const data = {
       id: id,
       name: menuData.name as string,
-      category: menuCategory,
+      category: menuData.category as MenuCategory,
     };
-    return Menu.fromFirestore(data);
+    return Menu.fromJson(data);
 
   }catch (err) {
     const msg = "Error when fetching menu with id: " + id + " with error: " + err;
     console.error(msg);
     throw new Error(msg);
+  }
+}
+
+export const getAllMenus = async (): Promise<Menu[]> => {
+  try {
+    const colRef = collection(firestore, COLLECTION_NAME);
+    const snapshot = await getDocs(colRef);
+    return snapshot.docs.map((docSnap) => Menu.fromJson({
+      id: docSnap.id as string,
+      name: docSnap.data().name as string,
+      category: docSnap.data().category as MenuCategory
+    }));
+  }catch (err) {
+    console.error("getAllMenus error:", err);
+    throw err;
   }
 }
