@@ -17,7 +17,7 @@ export const getOutletById = async (id: string): Promise<Outlet> => {
       throw new Error(msg)
     }
     const data = { id: outletSnap.id, name: outletSnap.data().name }
-    return Outlet.fromFirestore(data)
+    return Outlet.fromJson(data)
   }catch (err) {
     const msg = "Error when fetching outlet with id: " + id + " with error: " + err
     console.error(msg)

@@ -30,7 +30,7 @@ export async function getUserById(id: string): Promise<User> {
       outlet: outlet,
     };
 
-    return User.fromFirestore(data);
+    return User.fromJson(data);
   } catch (err) {
     const msg =
       "Error when fetcing user with id: " + id + " with error: " + err;

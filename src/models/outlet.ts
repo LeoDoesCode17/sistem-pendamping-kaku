@@ -7,7 +7,7 @@ export class Outlet {
     this.name = params.name;
   }
 
-  static fromFirestore(data: { id: string, name: string }): Outlet {
+  static fromJson(data: { id: string, name: string }): Outlet {
     return new Outlet({
       id: data.id,
       name: data.name,
