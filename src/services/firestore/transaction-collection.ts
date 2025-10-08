@@ -126,3 +126,56 @@ export const updateTransactionStatus = async (
     throw err;
   }
 };
+
+export const updateOrderedMenuStatus = async (
+  outletId: string,
+  transactionId: string,
+  orderedMenuId: string,
+  isDone: boolean
+): Promise<void> => {
+  const docRef = doc(
+    firestore,
+    `${COLLECTION_NAME}/${outletId}/${transactionId}`
+  );
+  try {
+    await runTransaction(firestore, async (tx) => {
+      const snap = await tx.get(docRef);
+      if (!snap.exists()) {
+        throw new Error(`Transaction ${transactionId} not found`);
+      }
+      const data = snap.data();
+      const now = isDone ? serverTimestamp() : deleteField();
+      let found = false;
+      const rawOrdered = Array.isArray(data.orderedMenus)
+        ? data.orderedMenus
+        : [];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const updatedOrdered = rawOrdered.map((orderedMenu: any) => {
+        if (orderedMenu.id === orderedMenuId) {
+          found = true;
+          const currentData = { ...orderedMenu, isDone };
+          currentData.timeFinished = now;
+          return currentData;
+        } else {
+          return orderedMenu;
+        }
+      });
+
+      if (!found) {
+        throw new Error(
+          `OrderedMenu ${orderedMenuId} not found in transaction ${transactionId}`
+        );
+      }
+      const updatedData = {
+        orderedMenus: updatedOrdered,
+      };
+      tx.update(docRef, updatedData);
+    });
+    console.log(
+      `✅ Ordered Menu ${orderedMenuId} status updated to ${isDone}.`
+    );
+  } catch (err) {
+    console.error("updateOrderedMenuStatus error:", err);
+    throw err;
+  }
+};
