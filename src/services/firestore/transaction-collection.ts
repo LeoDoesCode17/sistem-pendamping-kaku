@@ -179,3 +179,19 @@ export const updateOrderedMenuStatus = async (
     throw err;
   }
 };
+
+export const getAllOrderedMenus = async (
+  outletId: string
+): Promise<OrderedMenu[]> => {
+  try {
+    // get all transactions first
+    // get all ordered menus from transactions
+    // sort it based on timeCreated asc (older first)
+    const transactions = await getAllTransactions(outletId);
+    const orderedMenus = transactions.flatMap((t) => t.orderedMenus);
+    return orderedMenus.sort((a, b) => a.timeCreated! - b.timeCreated!);
+  } catch (err) {
+    console.error("getAllOrderedMenus error:", err);
+    throw err;
+  }
+};
