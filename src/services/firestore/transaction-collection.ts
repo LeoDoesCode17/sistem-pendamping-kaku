@@ -1,7 +1,10 @@
 import {
   addDoc,
   collection,
+  deleteField,
+  doc,
   getDocs,
+  runTransaction,
   serverTimestamp,
   Timestamp,
 } from "firebase/firestore";
@@ -79,6 +82,47 @@ export const createNewTransaction = async (
     });
   } catch (err) {
     console.error("createNewTransaction error:", err);
+    throw err;
+  }
+};
+
+export const updateTransactionStatus = async (
+  outletId: string,
+  transactionId: string,
+  isDone: boolean
+): Promise<void> => {
+  const docRef = doc(
+    firestore,
+    `${COLLECTION_NAME}/${outletId}/${transactionId}`
+  );
+  try {
+    // make sure get and update in atomic operation
+    await runTransaction(firestore, async (tx) => {
+      const snap = await tx.get(docRef);
+      if (!snap.exists()) {
+        throw new Error(`Transaction ${transactionId} not found`);
+      }
+      const data = snap.data();
+      const now = isDone ? serverTimestamp() : deleteField();
+      const rawOrdered = Array.isArray(data.orderedMenus)
+        ? data.orderedMenus
+        : [];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const updatedOrdered = rawOrdered.map((orderedMenu: any) => {
+        const currentData = { ...orderedMenu, isDone };
+        currentData.timeFinished = now;
+        return currentData;
+      });
+      const updatedData = {
+        isDone: isDone,
+        orderedMenus: updatedOrdered,
+        timeFinished: now,
+      };
+      tx.update(docRef, updatedData);
+    });
+    console.log(`✅ Transaction ${transactionId} status updated to ${isDone}.`);
+  } catch (err) {
+    console.error("updateTransactionStatus error:", err);
     throw err;
   }
 };
