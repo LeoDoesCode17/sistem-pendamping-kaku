@@ -2,7 +2,7 @@ import { TransactionCategory } from "@/types/transaction-category";
 import { OrderedMenu } from "./ordered-menu";
 
 export class Transaction {
-  id: string;
+  id: string | undefined;
   code: string;
   category: TransactionCategory;
   orderedMenus: OrderedMenu[];
@@ -11,7 +11,7 @@ export class Transaction {
   isDone: boolean;
 
   constructor(params: {
-    id: string;
+    id: string | undefined;
     code: string;
     category: TransactionCategory;
     orderedMenus: OrderedMenu[];
@@ -49,7 +49,7 @@ export class Transaction {
   }
 
   toJson(): {
-    id: string;
+    id: string | undefined;
     code: string;
     category: string;
     orderedMenus: {
