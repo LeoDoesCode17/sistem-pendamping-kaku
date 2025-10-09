@@ -46,7 +46,7 @@ export default function OrderHeader({ orderType, onDataChange }: OrderHeaderProp
             type="text"
             value={formData.customerName}
             onChange={(e) => handleInputChange('customerName', e.target.value)}
-            className="w-full px-4 py-3 border-2 border-gray-400 rounded-lg focus:outline-none focus:border-maroon"
+            className="w-full px-4 py-3 border-2 border-gray-400 rounded-lg focus:outline-none focus:border-maroon text-black font-medium"
             placeholder="Masukkan nama"
           />
         </div>
@@ -63,7 +63,7 @@ export default function OrderHeader({ orderType, onDataChange }: OrderHeaderProp
             type="text"
             value={formData.orderCode}
             onChange={(e) => handleInputChange('orderCode', e.target.value)}
-            className="w-full px-4 py-3 border-2 border-gray-400 rounded-lg focus:outline-none focus:border-maroon"
+            className="w-full px-4 py-3 border-2 border-gray-400 rounded-lg focus:outline-none focus:border-maroon text-black font-medium"
             placeholder={config.prefix ? `${config.prefix}kode pesanan` : 'Masukkan kode'}
           />
         </div>
@@ -80,7 +80,7 @@ export default function OrderHeader({ orderType, onDataChange }: OrderHeaderProp
             type="tel"
             value={formData.phoneNumber}
             onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
-            className="w-full px-4 py-3 border-2 border-gray-400 rounded-lg focus:outline-none focus:border-maroon"
+            className="w-full px-4 py-3 border-2 border-gray-400 rounded-lg focus:outline-none focus:border-maroon text-black font-medium"
             placeholder="08xx xxxx xxxx"
           />
         </div>
