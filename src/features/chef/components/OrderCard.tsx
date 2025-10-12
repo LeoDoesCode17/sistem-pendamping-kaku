@@ -36,23 +36,28 @@ export default function OrderCard({ order, onComplete }: OrderCardProps) {
     return 'text-red-600'; // > 5 menit
   };
 
+  const getBorderColor = (seconds: number) => {
+    if (seconds < 180) return 'border-green-500'; // < 3 menit
+    if (seconds < 300) return 'border-yellow-500'; // 3-5 menit
+    return 'border-red-500'; // > 5 menit
+  };
+
   return (
-    <div className="bg-white rounded-lg shadow-md p-4 flex items-center justify-between border-2 border-gray-200 hover:border-gray-300 transition-colors">
-      <div className="flex items-center gap-4 flex-1">
-        <div className="text-lg font-semibold text-gray-800 min-w-[80px]">
+    <div className={`bg-white rounded-2xl shadow-xl p-8 border-4 ${getBorderColor(elapsedTime)} hover:shadow-2xl transition-shadow`}>
+      <div className="flex flex-col items-center mb-6">
+        <div className="text-3xl font-bold text-gray-800 mb-2">
           1 x ({order.orderCode})
         </div>
-        <div className={`text-2xl font-bold ${getTimeColor(elapsedTime)}`}>
+        <div className={`text-6xl font-black ${getTimeColor(elapsedTime)}`}>
           {formatTime(elapsedTime)}
         </div>
       </div>
-
       <button
         onClick={() => onComplete(order.id)}
-        className="bg-blue-500 hover:bg-blue-600 text-white rounded-full p-3 transition-colors"
-        aria-label="Selesai"
+        className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-5 rounded-xl flex items-center justify-center gap-3 transition-colors text-xl shadow-lg"
       >
-        <Check className="w-6 h-6" />
+        <Check className="w-8 h-8 stroke-[3]" />
+        SELESAI
       </button>
     </div>
   );

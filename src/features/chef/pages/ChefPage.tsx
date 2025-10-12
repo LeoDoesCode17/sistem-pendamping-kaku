@@ -12,19 +12,37 @@ const DUMMY_ORDERS: ChefOrder[] = [
     id: '1',
     orderCode: 'PP',
     itemName: 'Pisang Goreng',
-    startTime: new Date(Date.now() - 320000) // 5 menit 20 detik lalu
+    startTime: new Date(Date.now() - 750000) // 12 menit 30 detik lalu
   },
   {
     id: '2',
     orderCode: 'PP',
     itemName: 'Pisang Goreng',
-    startTime: new Date(Date.now() - 140000) // 2 menit 20 detik lalu
+    startTime: new Date(Date.now() - 570000) // 9 menit 30 detik lalu
   },
   {
     id: '3',
     orderCode: 'BG',
     itemName: 'Bakwan Goreng',
-    startTime: new Date(Date.now() - 60000) // 1 menit lalu
+    startTime: new Date(Date.now() - 490000) // 8 menit 10 detik lalu
+  },
+  {
+    id: '4',
+    orderCode: 'TB',
+    itemName: 'Tahu Bakso',
+    startTime: new Date(Date.now() - 255000) // 4 menit 15 detik lalu
+  },
+  {
+    id: '5',
+    orderCode: 'CG',
+    itemName: 'Cireng',
+    startTime: new Date(Date.now() - 125000) // 2 menit 5 detik lalu
+  },
+  {
+    id: '6',
+    orderCode: 'TT',
+    itemName: 'Thai Tea',
+    startTime: new Date(Date.now() - 45000) // 45 detik lalu
   }
 ];
 
@@ -57,31 +75,26 @@ export default function ChefPage() {
 
   return (
     <>
-      <div className="min-h-screen bg-gray-50 p-6">
-        <div className="max-w-4xl mx-auto">
-          {/* Header */}
-          <div className="bg-gradient-to-r from-pink-400 to-pink-300 rounded-t-2xl p-6 shadow-lg">
-            <h1 className="text-3xl font-bold text-gray-800 text-center">
-              WAITING LIST
-            </h1>
-          </div>
+      <div className="min-h-screen bg-gray-100 p-8">
+        <div className="max-w-7xl mx-auto">
+ 
 
-          {/* Order List */}
-          <div className="bg-white rounded-b-2xl shadow-lg p-6 space-y-4">
-            {sortedOrders.length === 0 ? (
-              <div className="text-center py-12 text-gray-500">
-                <p className="text-lg">Tidak ada pesanan saat ini</p>
-              </div>
-            ) : (
-              sortedOrders.map((order) => (
+          {/* Grid Layout */}
+          {orders.length === 0 ? (
+            <div className="bg-white rounded-2xl shadow-xl p-12 text-center">
+              <p className="text-2xl text-gray-500">Tidak ada pesanan saat ini</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {sortedOrders.map((order) => (
                 <OrderCard
                   key={order.id}
                   order={order}
                   onComplete={handleComplete}
                 />
-              ))
-            )}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
