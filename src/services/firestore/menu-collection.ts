@@ -23,6 +23,7 @@ export const getMenuById = async (id: string): Promise<Menu> => {
     const data = {
       id: id,
       name: menuData.name as string,
+      abbreviation: menuData.abbraviation as string,
       category: menuData.category as MenuCategory,
     };
     return Menu.fromJson(data);
@@ -41,6 +42,7 @@ export const getAllMenus = async (): Promise<Menu[]> => {
     return snapshot.docs.map((docSnap) => Menu.fromJson({
       id: docSnap.id as string,
       name: docSnap.data().name as string,
+      abbreviation: docSnap.data().abbreviation as string,
       category: docSnap.data().category as MenuCategory
     }));
   }catch (err) {
