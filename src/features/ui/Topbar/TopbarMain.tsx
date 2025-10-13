@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 interface TopbarMainProps {
   pageType: "Kasir" | "Chef" | "Packager";
   showBackButton?: boolean;
-  backPath?: string; // Tambah prop untuk specify kemana back-nya
+  backPath?: string;
 }
 
 export default function TopbarMain({ 
@@ -24,23 +24,23 @@ export default function TopbarMain({
 
   const handleBack = () => {
     if (backPath) {
-      router.push(backPath); // Push ke path spesifik
+      router.push(backPath);
     } else {
-      router.back(); // Fallback ke browser back
+      router.back();
     }
   };
 
   return (
-    <div className="bg-maroon px-8 py-2 flex justify-between items-center shadow-lg">
+    <div className="bg-maroon px-8 py-4 flex justify-between items-center shadow-lg relative">
       <button 
-        className="text-cream"
+        className="text-cream z-10"
         aria-label={showBackButton ? "Back" : "Logout"}
         onClick={showBackButton ? handleBack : handleLogout}
       >
         {showBackButton ? <ArrowLeft /> : <LogOut />}
       </button>
 
-      <div className="flex flex-col items-center">
+      <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center">
         <h1 className="text-cream text-xl font-bold tracking-wide">Kaku Food</h1>
         <div className="bg-maroon2 text-cream rounded-xl border-2 border-cream px-4 py-px text-lg font-bold">
           {pageType}
