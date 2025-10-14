@@ -3,14 +3,14 @@
 
 import { useEffect, useState } from 'react';
 import { PackagerOrder } from '../types/packager';
-import { COUNTDOWN_DURATION } from '../constants/countdown';
+import { COUNTDOWN_DURATION, MAX_PREVIEW_ITEMS } from '../constants/countdown';
 
 interface PackagerOrderCardProps {
   order: PackagerOrder;
-  onComplete: (orderId: string) => void;
+  onClick: (order: PackagerOrder) => void;
 }
 
-export default function PackagerOrderCard({ order, onComplete }: PackagerOrderCardProps) {
+export default function PackagerOrderCard({ order, onClick }: PackagerOrderCardProps) {
   const [remainingTime, setRemainingTime] = useState(0);
 
   useEffect(() => {
@@ -51,16 +51,17 @@ export default function PackagerOrderCard({ order, onComplete }: PackagerOrderCa
     normal: 'text-green-800'
   };
 
-  const buttonColors = {
-    urgent: 'bg-red-800 hover:bg-red-900',
-    warning: 'bg-yellow-700 hover:bg-yellow-800',
-    normal: 'bg-green-700 hover:bg-green-800'
-  };
+  const previewItems = order.items.slice(0, MAX_PREVIEW_ITEMS);
+  const remainingItemsCount = order.items.length - MAX_PREVIEW_ITEMS;
+  const hasMore = remainingItemsCount > 0;
 
   return (
-    <div className={`${cardColors[urgency]} rounded-2xl shadow-xl border-4 overflow-hidden`}>
+    <button
+      onClick={() => onClick(order)}
+      className={`${cardColors[urgency]} rounded-2xl shadow-xl border-4 overflow-hidden text-left w-full hover:shadow-2xl transition-all hover:scale-[1.02] flex flex-col min-h-[280px]`}
+    >
       {/* Header */}
-      <div className="px-6 py-4 flex items-center justify-between">
+      <div className="px-6 py-4 flex items-center justify-between flex-shrink-0">
         <div>
           <h3 className="text-2xl font-bold text-gray-800">{order.orderCode}</h3>
           <p className="text-sm text-gray-700">
@@ -72,9 +73,9 @@ export default function PackagerOrderCard({ order, onComplete }: PackagerOrderCa
         </div>
       </div>
 
-      {/* Items List */}
-      <div className="bg-white mx-4 mb-4 rounded-lg">
-        {order.items.map((item, index) => (
+      {/* Items Preview (Max 3) */}
+      <div className="bg-white mx-4 mb-4 rounded-lg flex-shrink-0">
+        {previewItems.map((item, index) => (
           <div
             key={index}
             className="px-4 py-3 border-b last:border-b-0 border-gray-200"
@@ -84,17 +85,19 @@ export default function PackagerOrderCard({ order, onComplete }: PackagerOrderCa
             </div>
           </div>
         ))}
+        
+        {/* Show "... X items lagi" jika lebih dari 3 */}
+        {hasMore && (
+          <div className="px-4 py-3 text-center bg-gray-50">
+            <span className="text-gray-600 font-semibold">
+              ... {remainingItemsCount} item lagi
+            </span>
+          </div>
+        )}
       </div>
 
-      {/* Button */}
-      <div className="px-4 pb-4">
-        <button
-          onClick={() => onComplete(order.id)}
-          className={`w-full ${buttonColors[urgency]} text-white font-bold py-3 rounded-lg transition-colors text-lg`}
-        >
-          Selesai
-        </button>
-      </div>
-    </div>
+      {/* Spacer - untuk push konten ke atas */}
+      <div className="flex-grow"></div>
+    </button>
   );
 }

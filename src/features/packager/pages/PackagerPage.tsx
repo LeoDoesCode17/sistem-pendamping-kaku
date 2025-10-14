@@ -4,6 +4,7 @@
 import { useState } from 'react';
 import { PackagerOrder } from '../types/packager';
 import PackagerOrderCard from '../components/PackagerOrderCard';
+import OrderDetailModal from '../components/OrderDetailModal';
 import ConfirmationModal from '../components/ConfirmationModal';
 
 // Dummy data untuk testing
@@ -17,6 +18,9 @@ const DUMMY_ORDERS: PackagerOrder[] = [
       { quantity: 2, itemName: 'Pentol Pedas', itemCode: 'PP' },
       { quantity: 1, itemName: 'Pentol Pedas', itemCode: 'PP' },
       { quantity: 1, itemName: 'Bakso Goreng', itemCode: 'BG' },
+      { quantity: 1, itemName: 'Tahu Bakso', itemCode: 'TB' },
+      { quantity: 2, itemName: 'Cireng', itemCode: 'CG' },
+      { quantity: 1, itemName: 'Thai Tea', itemCode: 'TT' }
     ],
     createdAt: new Date(Date.now() - 690000) // 11 menit 30 detik lalu
   },
@@ -26,9 +30,10 @@ const DUMMY_ORDERS: PackagerOrder[] = [
     orderTime: '12:48',
     orderType: 'Take away',
     items: [
-      { quantity: 2, itemName: 'Pentol Pedas', itemCode: 'PP' }
+      { quantity: 2, itemName: 'Pentol Pedas', itemCode: 'PP' },
+      { quantity: 1, itemName: 'Bakso Goreng', itemCode: 'BG' }
     ],
-    createdAt: new Date(Date.now() - 690000) // 11 menit 30 detik lalu
+    createdAt: new Date(Date.now() - 690000)
   },
   {
     id: '3',
@@ -40,7 +45,7 @@ const DUMMY_ORDERS: PackagerOrder[] = [
       { quantity: 1, itemName: 'Pentol Pedas', itemCode: 'PP' },
       { quantity: 1, itemName: 'Bakso Goreng', itemCode: 'BG' }
     ],
-    createdAt: new Date(Date.now() - 690000) // 11 menit 30 detik lalu
+    createdAt: new Date(Date.now() - 690000)
   },
   {
     id: '4',
@@ -48,17 +53,9 @@ const DUMMY_ORDERS: PackagerOrder[] = [
     orderTime: '12:48',
     orderType: 'Take away',
     items: [
-      { quantity: 2, itemName: 'Pentol Pedas', itemCode: 'PP' },
-      { quantity: 1, itemName: 'Pentol Pedas', itemCode: 'PP' },
-      { quantity: 1, itemName: 'Bakso Goreng', itemCode: 'BG' },
-      { quantity: 1, itemName: 'Pentol Pedas', itemCode: 'PP' },
-      { quantity: 1, itemName: 'Bakso Goreng', itemCode: 'BG' },
-      { quantity: 1, itemName: 'Pentol Pedas', itemCode: 'PP' },
-      { quantity: 1, itemName: 'Bakso Goreng', itemCode: 'BG' },
-      { quantity: 1, itemName: 'Pentol Pedas', itemCode: 'PP' },
-      { quantity: 1, itemName: 'Bakso Goreng', itemCode: 'BG' },
+      { quantity: 2, itemName: 'Pentol Pedas', itemCode: 'PP' }
     ],
-    createdAt: new Date(Date.now() - 360000) // 11 menit 30 detik lalu
+    createdAt: new Date(Date.now() - 690000)
   },
   {
     id: '5',
@@ -70,7 +67,7 @@ const DUMMY_ORDERS: PackagerOrder[] = [
       { quantity: 1, itemName: 'Pentol Pedas', itemCode: 'PP' },
       { quantity: 1, itemName: 'Bakso Goreng', itemCode: 'BG' }
     ],
-    createdAt: new Date(Date.now() - 30000) // 30 detik lalu
+    createdAt: new Date(Date.now() - 30000)
   },
   {
     id: '6',
@@ -82,13 +79,14 @@ const DUMMY_ORDERS: PackagerOrder[] = [
       { quantity: 1, itemName: 'Pentol Pedas', itemCode: 'PP' },
       { quantity: 1, itemName: 'Bakso Goreng', itemCode: 'BG' }
     ],
-    createdAt: new Date(Date.now() - 30000) // 30 detik lalu
+    createdAt: new Date(Date.now() - 30000)
   }
 ];
 
 export default function PackagerPage() {
   const [orders, setOrders] = useState<PackagerOrder[]>(DUMMY_ORDERS);
   const [selectedOrder, setSelectedOrder] = useState<PackagerOrder | null>(null);
+  const [showConfirmation, setShowConfirmation] = useState(false);
 
   // Sort orders berdasarkan countdown terkecil (paling urgent)
   const sortedOrders = [...orders].sort((a, b) => {
@@ -98,21 +96,27 @@ export default function PackagerPage() {
     return remainingA - remainingB;
   });
 
-  const handleComplete = (orderId: string) => {
-    const order = orders.find(o => o.id === orderId);
-    if (order) {
-      setSelectedOrder(order);
-    }
+  const handleCardClick = (order: PackagerOrder) => {
+    setSelectedOrder(order);
   };
 
-  const handleConfirm = () => {
+  const handleComplete = () => {
+    setShowConfirmation(true);
+  };
+
+  const handleConfirmComplete = () => {
     if (selectedOrder) {
       setOrders(prev => prev.filter(o => o.id !== selectedOrder.id));
       setSelectedOrder(null);
+      setShowConfirmation(false);
     }
   };
 
-  const handleCancel = () => {
+  const handleCancelConfirmation = () => {
+    setShowConfirmation(false);
+  };
+
+  const handleCloseDetail = () => {
     setSelectedOrder(null);
   };
 
@@ -120,7 +124,6 @@ export default function PackagerPage() {
     <>
       <div className="min-h-screen bg-gray-100 p-8">
         <div className="max-w-7xl mx-auto">
-
 
           {/* Grid Layout */}
           {orders.length === 0 ? (
@@ -133,7 +136,7 @@ export default function PackagerPage() {
                 <PackagerOrderCard
                   key={order.id}
                   order={order}
-                  onComplete={handleComplete}
+                  onClick={handleCardClick}
                 />
               ))}
             </div>
@@ -141,12 +144,20 @@ export default function PackagerPage() {
         </div>
       </div>
 
+      {/* Order Detail Modal */}
+      <OrderDetailModal
+        isOpen={selectedOrder !== null && !showConfirmation}
+        order={selectedOrder}
+        onComplete={handleComplete}
+        onClose={handleCloseDetail}
+      />
+
       {/* Confirmation Modal */}
       <ConfirmationModal
-        isOpen={selectedOrder !== null}
+        isOpen={showConfirmation}
         orderCode={selectedOrder?.orderCode || ''}
-        onConfirm={handleConfirm}
-        onCancel={handleCancel}
+        onConfirm={handleConfirmComplete}
+        onCancel={handleCancelConfirmation}
       />
     </>
   );
