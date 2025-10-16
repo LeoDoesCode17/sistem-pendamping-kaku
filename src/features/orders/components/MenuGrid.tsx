@@ -1,11 +1,11 @@
 'use client';
 
-import { MenuItem } from '../types/menu';
+import { Menu } from '@/models/menu';
 import MenuCard from './MenuCard';
 
 interface MenuGridProps {
-  items: MenuItem[];
-  onItemClick: (item: MenuItem) => void;
+  items: Menu[];
+  onItemClick: (item: Menu) => void;
 }
 
 export default function MenuGrid({ items, onItemClick }: MenuGridProps) {
