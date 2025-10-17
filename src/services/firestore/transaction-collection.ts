@@ -20,7 +20,7 @@ export const getAllTransactions = async (
   outletId: string
 ): Promise<Transaction[]> => {
   try {
-    const colRef = collection(firestore, `${COLLECTION_NAME}/${outletId}`);
+    const colRef = collection(firestore, `${COLLECTION_NAME}/${outletId}/list`);
     const [querySnapshot, allMenus] = await Promise.all([
       getDocs(colRef),
       getAllMenus(),
@@ -94,7 +94,7 @@ export const updateTransactionStatus = async (
 ): Promise<void> => {
   const docRef = doc(
     firestore,
-    `${COLLECTION_NAME}/${outletId}/${transactionId}`
+    `${COLLECTION_NAME}/${outletId}/${transactionId}/list`
   );
   try {
     // make sure get and update in atomic operation
