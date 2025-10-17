@@ -3,10 +3,10 @@
 'use client';
 
 import { Trash2 } from 'lucide-react';
-import { CartItem } from '../types/menu';
+import { OrderedMenu } from '@/models/ordered-menu';
 
 interface CartProps {
-    items: CartItem[];
+    items: OrderedMenu[];
     onUpdateQuantity: (itemId: string, quantity: number) => void;
     onRemoveItem: (itemId: string) => void;
     onConfirmOrder: () => void;
@@ -71,7 +71,7 @@ export default function Cart({
                             className="bg-white rounded-lg p-4 border-2 border-black"
                         >
                             <div className="flex items-start justify-between mb-3">
-                                <h3 className="font-semibold flex-1 pr-2">{item.name}</h3>
+                                <h3 className="font-semibold flex-1 pr-2">{item.menu.name}</h3>
                                 <button
                                     onClick={() => onRemoveItem(item.id)}
                                     className="bg-maroon  text-cream p-2 rounded transition-colors"

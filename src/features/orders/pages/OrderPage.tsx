@@ -1,98 +1,105 @@
 // features/orders/pages/OrderPage.tsx
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { OrderType, OrderHeaderData } from '../types/order';
-import { MenuItem, CartItem } from '../types/menu';
-import { CategoryId } from '../constants/categories';
-import OrderHeader from '../components/OrderHeader';
-import CategoryFilter from '../components/CategoryFilter';
-import MenuGrid from '../components/MenuGrid';
-import Cart from '../components/Cart';
+import { useEffect, useState } from "react";
+import { OrderType, OrderHeaderData, getOrderDataValue } from "../types/order";
+import OrderHeader from "../components/OrderHeader";
+import CategoryFilter from "../components/CategoryFilter";
+import MenuGrid from "../components/MenuGrid";
+import Cart from "../components/Cart";
+import { Menu } from "@/models/menu"; 
+import { getAllMenus } from "@/services/firestore/menu-collection";
+import { OrderedMenu } from "@/models/ordered-menu";
+import { v4 as uuid4 } from "uuid";
+import { TransactionCategory } from "@/types/transaction-category";
 
 interface OrderPageProps {
   orderType: OrderType;
+  transactionCategory?: TransactionCategory
 }
 
-// Dummy data menu (nanti bisa diganti dengan fetch dari API)
-const DUMMY_MENU: MenuItem[] = [
-  { id: '1', name: 'Tahu Bakso', category: 'gorengan', price: 5000 },
-  { id: '2', name: 'Pisang Goreng', category: 'pisang', price: 3000 },
-  { id: '3', name: 'Thai Tea', category: 'minuman', price: 8000 },
-  { id: '4', name: 'Sambal Kacang', category: 'sambal', price: 2000 },
-  { id: '5', name: 'Tahu Isi', category: 'gorengan', price: 4000 },
-  { id: '6', name: 'Tempe Mendoan', category: 'gorengan', price: 3000 },
-  { id: '7', name: 'Cireng', category: 'gorengan', price: 3000 },
-  { id: '8', name: 'Cimol Original', category: 'cimol', price: 5000 },
-  { id: '9', name: 'Cimol Pedas', category: 'cimol', price: 5000 },
-  { id: '10', name: 'Pisang Coklat', category: 'pisang', price: 4000 },
-  { id: '11', name: 'Pisang Keju', category: 'pisang', price: 4000 },
-  { id: '12', name: 'Tahu Crispy', category: 'gorengan', price: 4000 },
-  { id: '13', name: 'Bakwan Jagung', category: 'gorengan', price: 3000 },
-  { id: '14', name: 'Es Teh Manis', category: 'minuman', price: 3000 },
-  { id: '15', name: 'Es Jeruk', category: 'minuman', price: 5000 },
-  { id: '16', name: 'Kopi Susu', category: 'minuman', price: 8000 },
-  { id: '17', name: 'Sambal Matah', category: 'sambal', price: 2000 },
-  { id: '18', name: 'Tahu Rebus', category: 'rebusan', price: 3000 },
-  { id: '19', name: 'Telur Rebus', category: 'rebusan', price: 2000 },
-  { id: '20', name: 'Jagung Rebus', category: 'rebusan', price: 4000 },
-];
-
-export default function OrderPage({ orderType }: OrderPageProps) {
+export default function OrderPage({ orderType, transactionCategory }: OrderPageProps) {
   const [orderData, setOrderData] = useState<OrderHeaderData>({});
-  const [selectedCategory, setSelectedCategory] = useState<CategoryId>('all');
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [myCategory, setMyCategory] = useState<string>("all");
+  const [myCartItems, setMyCartItems] = useState<OrderedMenu[]>([]);
+  const [menus, setMenus] = useState<Menu[]>([]);
 
-  // Filter menu berdasarkan kategori
-  const filteredMenu = selectedCategory === 'all' 
-    ? DUMMY_MENU 
-    : DUMMY_MENU.filter(item => item.category === selectedCategory);
+  useEffect(() => {
+    const fetchMenus = async () => {
+      try {
+        const allMenus = await getAllMenus();
+        setMenus(allMenus);
+        console.log(allMenus);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchMenus();
+  }, []);
+
+  const myMenuFilter =
+    myCategory === "all"
+      ? menus
+      : menus.filter((menu) => menu.category === myCategory);
 
   // Handle klik menu item
-  const handleMenuItemClick = (item: MenuItem) => {
-    setCartItems(prev => {
-      const existingItem = prev.find(cartItem => cartItem.id === item.id);
-      
+  const myHandleMenuItemClick = (item: Menu) => {
+    setMyCartItems((prev) => {
+      const existingItem = prev.find((cartItem) => cartItem.menu.abbreviation === item.abbreviation);
       if (existingItem) {
-        // Jika sudah ada, tambah quantity
-        return prev.map(cartItem =>
-          cartItem.id === item.id
-            ? { ...cartItem, quantity: cartItem.quantity + 1 }
+        return prev.map((cartItem) =>
+          cartItem.menu.abbreviation === item.abbreviation
+            ? OrderedMenu.fromJson({
+                ...cartItem,
+                quantity: cartItem.quantity + 1,
+              })
             : cartItem
         );
       } else {
-        // Jika belum ada, tambah item baru
-        return [...prev, { ...item, quantity: 1 }];
+        return [
+          ...prev,
+          new OrderedMenu({
+            id: uuid4(),
+            menu: item,
+            quantity: 1,
+            isDone: false,
+            customize: undefined,
+            timeCreated: undefined,
+            timeFinished: undefined,
+          }),
+        ];
       }
     });
   };
 
   // Handle update quantity
-  const handleUpdateQuantity = (itemId: string, newQuantity: number) => {
+  const myHandleUpdateQuantity = (itemId: string, newQuantity: number) => {
     if (newQuantity <= 0) {
-      handleRemoveItem(itemId);
+      myHandleRemoveItem(itemId);
       return;
     }
-
-    setCartItems(prev =>
-      prev.map(item =>
-        item.id === itemId ? { ...item, quantity: newQuantity } : item
+    setMyCartItems((prev) =>
+      prev.map((item) =>
+        item.id === itemId
+          ? OrderedMenu.fromJson({ ...item, quantity: newQuantity })
+          : item
       )
     );
   };
 
   // Handle remove item
-  const handleRemoveItem = (itemId: string) => {
-    setCartItems(prev => prev.filter(item => item.id !== itemId));
+  const myHandleRemoveItem = (itemId: string) => {
+    setMyCartItems((prev) => prev.filter((item) => itemId !== item.id));
   };
 
   // Handle konfirmasi pesanan
-  const handleConfirmOrder = () => {
-    console.log('Order Data:', orderData);
-    console.log('Cart Items:', cartItems);
-    
-    // TODO: Implement API call atau navigasi ke halaman berikutnya
-    alert('Pesanan dikonfirmasi! (Lihat console untuk data)');
+  const myHandleConfirmOrder = () => {
+    const code = getOrderDataValue(orderData);
+    const category = transactionCategory;
+    console.log("Order data : ", code);
+    console.log('Category: ', category);
+    console.log("My cart items : ", myCartItems);
+    alert("My Pesanan dikonfirmasi! (Lihat console untuk data)");
   };
 
   return (
@@ -102,28 +109,24 @@ export default function OrderPage({ orderType }: OrderPageProps) {
           {/* Left Side - Menu Section */}
           <div className="col-span-8">
             {/* Order Header */}
-            <OrderHeader 
-              orderType={orderType} 
-              onDataChange={setOrderData}
-            />
+            <OrderHeader orderType={orderType} onDataChange={setOrderData} />
 
             {/* Category Filter */}
-            <CategoryFilter onCategoryChange={setSelectedCategory} />
+            <CategoryFilter
+              myOnCategoryChange={setMyCategory}
+            />
 
             {/* Menu Grid */}
-            <MenuGrid 
-              items={filteredMenu}
-              onItemClick={handleMenuItemClick}
-            />
+            <MenuGrid items={myMenuFilter} onItemClick={myHandleMenuItemClick} />
           </div>
 
           {/* Right Side - Cart */}
           <div className="col-span-4">
             <Cart
-              items={cartItems}
-              onUpdateQuantity={handleUpdateQuantity}
-              onRemoveItem={handleRemoveItem}
-              onConfirmOrder={handleConfirmOrder}
+              items={myCartItems}
+              onUpdateQuantity={myHandleUpdateQuantity}
+              onRemoveItem={myHandleRemoveItem}
+              onConfirmOrder={myHandleConfirmOrder}
             />
           </div>
         </div>
