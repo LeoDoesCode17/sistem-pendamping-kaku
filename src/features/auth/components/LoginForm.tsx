@@ -1,10 +1,9 @@
 'use client';
 
-import { signInEmail } from '@/services/authentication/auth.service';
 import { Role } from '@/types/role';
-import Router from 'next/router';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/AuthProvider';
 
 
 interface LoginFormProps {
@@ -13,6 +12,7 @@ interface LoginFormProps {
 
 export default function LoginForm({ onLogin }: LoginFormProps) {
   const router = useRouter();
+  const { signInEmail } = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -34,8 +34,7 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
       console.log(username, password);
       console.log(user);
 
-      if (user!.role == Role.Cashier
-      ) {
+      if (user!.role == Role.Cashier) {
         router.push('/cashier');
       } else if (user!.role == Role.Chef) {
         router.push('/chef');
@@ -44,6 +43,7 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
       }
 
     } catch (err) {
+      console.error('Error when login ', err)
       setError('Terjadi kesalahan. Silakan coba lagi.');
     } finally {
       setLoading(false);
