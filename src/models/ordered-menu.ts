@@ -1,21 +1,21 @@
 import { Menu } from "./menu";
 
 export class OrderedMenu {
-  id: string;
+  id: string | null;
   menu: Menu;
   quantity: number;
-  timeCreated: number | undefined;
-  timeFinished: number | undefined;
-  customize: string | undefined;
+  timeCreated: number | null;
+  timeFinished: number | null;
+  customize: string | null;
   isDone: boolean;
 
   constructor(params: {
-    id: string;
+    id: string | null;
     menu: Menu;
     quantity: number;
-    timeCreated: number | undefined;
-    timeFinished: number | undefined;
-    customize: string | undefined;
+    timeCreated: number | null;
+    timeFinished: number | null;
+    customize: string | null;
     isDone: boolean;
   }) {
     this.id = params.id;
@@ -28,28 +28,26 @@ export class OrderedMenu {
   }
 
   toJson(): {
-    id: string;
+    id: string | null;
     menu: string;
     quantity: number;
-    customize: string | undefined;
     isDone: boolean
   } {
     return {
       id: this.id,
       menu: this.menu.id,
       quantity: this.quantity,
-      customize: this.customize,
       isDone: false,
     };
   }
 
   static fromJson(data: {
-    id: string;
+    id: string | null;
     menu: Menu;
     quantity: number;
-    customize: string | undefined;
-    timeCreated: number | undefined;
-    timeFinished: number | undefined;
+    customize: string | null;
+    timeCreated: number | null;
+    timeFinished: number | null;
     isDone: boolean;
   }): OrderedMenu {
     return new OrderedMenu({
