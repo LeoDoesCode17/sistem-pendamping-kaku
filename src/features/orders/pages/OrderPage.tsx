@@ -82,7 +82,7 @@ export default function OrderPage({
   };
 
   // Handle update quantity
-  const myHandleUpdateQuantity = (itemId: string, newQuantity: number) => {
+  const myHandleUpdateQuantity = (itemId: string | null, newQuantity: number) => {
     if (newQuantity <= 0) {
       myHandleRemoveItem(itemId);
       return;
@@ -97,7 +97,7 @@ export default function OrderPage({
   };
 
   // Handle remove item
-  const myHandleRemoveItem = (itemId: string) => {
+  const myHandleRemoveItem = (itemId: string | null) => {
     setMyCartItems((prev) => prev.filter((item) => itemId !== item.id));
   };
 

@@ -7,8 +7,8 @@ import { OrderedMenu } from '@/models/ordered-menu';
 
 interface CartProps {
     items: OrderedMenu[];
-    onUpdateQuantity: (itemId: string, quantity: number) => void;
-    onRemoveItem: (itemId: string) => void;
+    onUpdateQuantity: (itemId: string | null, quantity: number) => void;
+    onRemoveItem: (itemId: string | null) => void;
     onConfirmOrder: () => void;
 }
 
