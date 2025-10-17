@@ -7,22 +7,29 @@ import OrderHeader from "../components/OrderHeader";
 import CategoryFilter from "../components/CategoryFilter";
 import MenuGrid from "../components/MenuGrid";
 import Cart from "../components/Cart";
-import { Menu } from "@/models/menu"; 
+import { Menu } from "@/models/menu";
 import { getAllMenus } from "@/services/firestore/menu-collection";
 import { OrderedMenu } from "@/models/ordered-menu";
 import { v4 as uuid4 } from "uuid";
 import { TransactionCategory } from "@/types/transaction-category";
+import { useAuth } from "@/context/AuthProvider";
+import { Transaction } from "@/models/transaction";
+import { createNewTransaction } from "@/services/firestore/transaction-collection";
 
 interface OrderPageProps {
   orderType: OrderType;
-  transactionCategory?: TransactionCategory
+  transactionCategory?: TransactionCategory;
 }
 
-export default function OrderPage({ orderType, transactionCategory }: OrderPageProps) {
+export default function OrderPage({
+  orderType,
+  transactionCategory,
+}: OrderPageProps) {
   const [orderData, setOrderData] = useState<OrderHeaderData>({});
   const [myCategory, setMyCategory] = useState<string>("all");
   const [myCartItems, setMyCartItems] = useState<OrderedMenu[]>([]);
   const [menus, setMenus] = useState<Menu[]>([]);
+  const { user } = useAuth();
 
   useEffect(() => {
     const fetchMenus = async () => {
@@ -45,7 +52,9 @@ export default function OrderPage({ orderType, transactionCategory }: OrderPageP
   // Handle klik menu item
   const myHandleMenuItemClick = (item: Menu) => {
     setMyCartItems((prev) => {
-      const existingItem = prev.find((cartItem) => cartItem.menu.abbreviation === item.abbreviation);
+      const existingItem = prev.find(
+        (cartItem) => cartItem.menu.abbreviation === item.abbreviation
+      );
       if (existingItem) {
         return prev.map((cartItem) =>
           cartItem.menu.abbreviation === item.abbreviation
@@ -63,9 +72,9 @@ export default function OrderPage({ orderType, transactionCategory }: OrderPageP
             menu: item,
             quantity: 1,
             isDone: false,
-            customize: undefined,
-            timeCreated: undefined,
-            timeFinished: undefined,
+            customize: null,
+            timeCreated: null,
+            timeFinished: null,
           }),
         ];
       }
@@ -73,7 +82,7 @@ export default function OrderPage({ orderType, transactionCategory }: OrderPageP
   };
 
   // Handle update quantity
-  const myHandleUpdateQuantity = (itemId: string, newQuantity: number) => {
+  const myHandleUpdateQuantity = (itemId: string | null, newQuantity: number) => {
     if (newQuantity <= 0) {
       myHandleRemoveItem(itemId);
       return;
@@ -88,18 +97,41 @@ export default function OrderPage({ orderType, transactionCategory }: OrderPageP
   };
 
   // Handle remove item
-  const myHandleRemoveItem = (itemId: string) => {
+  const myHandleRemoveItem = (itemId: string | null) => {
     setMyCartItems((prev) => prev.filter((item) => itemId !== item.id));
   };
 
   // Handle konfirmasi pesanan
-  const myHandleConfirmOrder = () => {
+  const myHandleConfirmOrder = async () => {
+    if (!user) {
+      console.log("User is not valid");
+      return;
+    }
     const code = getOrderDataValue(orderData);
     const category = transactionCategory;
-    console.log("Order data : ", code);
-    console.log('Category: ', category);
-    console.log("My cart items : ", myCartItems);
-    alert("My Pesanan dikonfirmasi! (Lihat console untuk data)");
+    if (!category) {
+      console.log("Invalid category");
+      return;
+    }
+    const outlet = user.outlet;
+    const transaction = new Transaction({
+      code: code,
+      category: category,
+      orderedMenus: myCartItems,
+      isDone: false,
+      id: null,
+      timeCreated: null,
+      timeFinished: null,
+    });
+    console.log("Transaction data: ", transaction);
+    console.log("Outlet: ", outlet);
+    try {
+      await createNewTransaction(outlet.id, transaction);
+      alert("Pesanan dibuat");
+    } catch (err) {
+      alert("Pesanan gagal dibuat");
+      console.error("Error when create a new transaction: ", err);
+    }
   };
 
   return (
@@ -112,12 +144,13 @@ export default function OrderPage({ orderType, transactionCategory }: OrderPageP
             <OrderHeader orderType={orderType} onDataChange={setOrderData} />
 
             {/* Category Filter */}
-            <CategoryFilter
-              myOnCategoryChange={setMyCategory}
-            />
+            <CategoryFilter myOnCategoryChange={setMyCategory} />
 
             {/* Menu Grid */}
-            <MenuGrid items={myMenuFilter} onItemClick={myHandleMenuItemClick} />
+            <MenuGrid
+              items={myMenuFilter}
+              onItemClick={myHandleMenuItemClick}
+            />
           </div>
 
           {/* Right Side - Cart */}

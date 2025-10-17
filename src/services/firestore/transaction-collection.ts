@@ -20,7 +20,7 @@ export const getAllTransactions = async (
   outletId: string
 ): Promise<Transaction[]> => {
   try {
-    const colRef = collection(firestore, `${COLLECTION_NAME}/${outletId}`);
+    const colRef = collection(firestore, `${COLLECTION_NAME}/${outletId}/list`);
     const [querySnapshot, allMenus] = await Promise.all([
       getDocs(colRef),
       getAllMenus(),
@@ -33,13 +33,13 @@ export const getAllTransactions = async (
           ? data.timeCreated.toMillis()
           : typeof data.timeCreated === "number"
           ? data.timeCreated
-          : undefined;
+          : null;
       const timeFinished =
         data.timeFinished instanceof Timestamp
           ? data.timeFinished.toMillis()
           : typeof data.timeFinished === "number"
           ? data.timeFinished
-          : undefined;
+          : null;
       const orderedMenus: OrderedMenu[] = data.orderedMenus.map(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (orderedMenu: any) =>
@@ -47,7 +47,7 @@ export const getAllTransactions = async (
             id: orderedMenu.id as string,
             menu: menuMap.get(orderedMenu.menu as string) as Menu,
             quantity: orderedMenu.quantity as number,
-            customize: orderedMenu.customize as string | undefined,
+            customize: orderedMenu.customize as string | null,
             timeCreated: timeCreated,
             timeFinished: timeFinished,
             isDone: orderedMenu.isDone as boolean,
@@ -74,11 +74,12 @@ export const createNewTransaction = async (
   transaction: Transaction
 ): Promise<void> => {
   try {
-    const colRef = collection(firestore, `${COLLECTION_NAME}/${outletId}`);
+    const colRef = collection(firestore, `${COLLECTION_NAME}/${outletId}/list`);
     const now = serverTimestamp();
     await addDoc(colRef, {
       ...transaction.toJson(),
       timeCreated: now,
+      timeFinished: now,
     });
   } catch (err) {
     console.error("createNewTransaction error:", err);
@@ -93,7 +94,7 @@ export const updateTransactionStatus = async (
 ): Promise<void> => {
   const docRef = doc(
     firestore,
-    `${COLLECTION_NAME}/${outletId}/${transactionId}`
+    `${COLLECTION_NAME}/${outletId}/${transactionId}/list`
   );
   try {
     // make sure get and update in atomic operation
