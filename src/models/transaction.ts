@@ -2,21 +2,21 @@ import { TransactionCategory } from "@/types/transaction-category";
 import { OrderedMenu } from "./ordered-menu";
 
 export class Transaction {
-  id: string | undefined;
+  id: string | null;
   code: string;
   category: TransactionCategory;
   orderedMenus: OrderedMenu[];
-  timeCreated: number | undefined;
-  timeFinished: number | undefined;
+  timeCreated: number | null;
+  timeFinished: number | null;
   isDone: boolean;
 
   constructor(params: {
-    id: string | undefined;
+    id: string | null;
     code: string;
     category: TransactionCategory;
     orderedMenus: OrderedMenu[];
-    timeCreated: number | undefined;
-    timeFinished: number | undefined;
+    timeCreated: number | null;
+    timeFinished: number | null;
     isDone: boolean;
   }) {
     this.id = params.id;
@@ -33,8 +33,8 @@ export class Transaction {
     code: string;
     category: string;
     orderedMenus: OrderedMenu[];
-    timeCreated: number | undefined;
-    timeFinished: number | undefined;
+    timeCreated: number | null;
+    timeFinished: number | null;
     isDone: boolean;
   }): Transaction {
     return new Transaction({
@@ -49,19 +49,16 @@ export class Transaction {
   }
 
   toJson(): {
-    id: string | undefined;
     code: string;
     category: string;
     orderedMenus: {
-      id: string;
+      id: string | null;
       menu: string;
       quantity: number;
-      customize: string | undefined;
     }[];
     isDone: boolean
   } {
     return {
-      id: this.id,
       code: this.code,
       category: this.category,
       orderedMenus: this.orderedMenus.map((orderedMenu) =>
