@@ -1,6 +1,6 @@
 export enum TransactionCategory {
   DineIn = "DINE IN",
-  Shopee = "SHOPEE",
+  ShopeeFood = "SHOPEE FOOD",
   GrabFood = "GRAB FOOD",
   GoFood = "GO FOOD",
   TakeAway = "TAKE AWAY",
