@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { OrderType, OrderHeaderData } from "../types/order";
+import { OrderType, OrderHeaderData, getOrderDataValue } from "../types/order";
 import OrderHeader from "../components/OrderHeader";
 import CategoryFilter from "../components/CategoryFilter";
 import MenuGrid from "../components/MenuGrid";
@@ -11,12 +11,14 @@ import { Menu } from "@/models/menu";
 import { getAllMenus } from "@/services/firestore/menu-collection";
 import { OrderedMenu } from "@/models/ordered-menu";
 import { v4 as uuid4 } from "uuid";
+import { TransactionCategory } from "@/types/transaction-category";
 
 interface OrderPageProps {
   orderType: OrderType;
+  transactionCategory?: TransactionCategory
 }
 
-export default function OrderPage({ orderType }: OrderPageProps) {
+export default function OrderPage({ orderType, transactionCategory }: OrderPageProps) {
   const [orderData, setOrderData] = useState<OrderHeaderData>({});
   const [myCategory, setMyCategory] = useState<string>("all");
   const [myCartItems, setMyCartItems] = useState<OrderedMenu[]>([]);
@@ -92,7 +94,10 @@ export default function OrderPage({ orderType }: OrderPageProps) {
 
   // Handle konfirmasi pesanan
   const myHandleConfirmOrder = () => {
-    console.log("Order data : ", orderData.customerName);
+    const code = getOrderDataValue(orderData);
+    const category = transactionCategory;
+    console.log("Order data : ", code);
+    console.log('Category: ', category);
     console.log("My cart items : ", myCartItems);
     alert("My Pesanan dikonfirmasi! (Lihat console untuk data)");
   };
