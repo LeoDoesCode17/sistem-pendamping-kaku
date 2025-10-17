@@ -6,3 +6,10 @@ export interface OrderHeaderData {
   orderCode?: string;
   phoneNumber?: string;
 }
+
+export const getOrderDataValue = (orderData: OrderHeaderData): string => {
+  if (orderData.customerName) return orderData.customerName;
+  if (orderData.orderCode) return orderData.orderCode;
+  if (orderData.phoneNumber) return orderData.phoneNumber;
+  return '';
+}
