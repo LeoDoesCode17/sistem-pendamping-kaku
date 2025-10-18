@@ -4,9 +4,11 @@ import {
   deleteField,
   doc,
   getDocs,
+  query,
   runTransaction,
   serverTimestamp,
   Timestamp,
+  where,
 } from "firebase/firestore";
 import { firestore } from "@/lib/firebase";
 import { Transaction } from "@/models/transaction";
@@ -17,12 +19,18 @@ import { getAllMenus } from "./menu-collection";
 const COLLECTION_NAME = "transactions";
 
 export const getAllTransactions = async (
-  outletId: string
+  outletId: string,
+  isDone?: boolean
 ): Promise<Transaction[]> => {
   try {
     const colRef = collection(firestore, `${COLLECTION_NAME}/${outletId}/list`);
+    // ✅ Only get transactions where isDone == false
+    const q =
+      typeof isDone === "boolean"
+        ? query(colRef, where("isDone", "==", isDone))
+        : colRef;
     const [querySnapshot, allMenus] = await Promise.all([
-      getDocs(colRef),
+      getDocs(q),
       getAllMenus(),
     ]);
     const menuMap = new Map(allMenus.map((menu) => [menu.id, menu]));
@@ -94,7 +102,7 @@ export const updateTransactionStatus = async (
 ): Promise<void> => {
   const docRef = doc(
     firestore,
-    `${COLLECTION_NAME}/${outletId}/${transactionId}/list`
+    `${COLLECTION_NAME}/${outletId}/list/${transactionId}`
   );
   try {
     // make sure get and update in atomic operation
@@ -111,7 +119,7 @@ export const updateTransactionStatus = async (
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const updatedOrdered = rawOrdered.map((orderedMenu: any) => {
         const currentData = { ...orderedMenu, isDone };
-        currentData.timeFinished = now;
+        // currentData.timeFinished = now;
         return currentData;
       });
       const updatedData = {
