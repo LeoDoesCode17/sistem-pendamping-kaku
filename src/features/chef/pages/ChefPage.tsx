@@ -2,69 +2,30 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ChefOrder } from "../types/chef";
-import OrderCard from "../components/OrderCard";
 import ConfirmationModal from "../components/ConfirmationModal";
 import { OrderedMenu } from "@/models/ordered-menu";
 import { useAuth } from "@/context/AuthProvider";
-import {
-  getAllOrderedMenus,
-  updateOrderedMenuStatus,
-} from "@/services/firestore/transaction-collection";
+import { updateOrderedMenuStatus } from "@/services/firestore/transaction-collection";
 import OrderedMenuCard from "../components/OrderedMenuCard";
-
-// Dummy data untuk testing
-const DUMMY_ORDERS: ChefOrder[] = [
-  {
-    id: "1",
-    orderCode: "PP",
-    itemName: "Pisang Goreng",
-    startTime: new Date(Date.now() - 750000), // 12 menit 30 detik lalu
-  },
-  {
-    id: "2",
-    orderCode: "PP",
-    itemName: "Pisang Goreng",
-    startTime: new Date(Date.now() - 570000), // 9 menit 30 detik lalu
-  },
-  {
-    id: "3",
-    orderCode: "BG",
-    itemName: "Bakwan Goreng",
-    startTime: new Date(Date.now() - 490000), // 8 menit 10 detik lalu
-  },
-  {
-    id: "4",
-    orderCode: "TB",
-    itemName: "Tahu Bakso",
-    startTime: new Date(Date.now() - 255000), // 4 menit 15 detik lalu
-  },
-  {
-    id: "5",
-    orderCode: "CG",
-    itemName: "Cireng",
-    startTime: new Date(Date.now() - 125000), // 2 menit 5 detik lalu
-  },
-  {
-    id: "6",
-    orderCode: "TT",
-    itemName: "Thai Tea",
-    startTime: new Date(Date.now() - 45000), // 45 detik lalu
-  },
-];
+import {
+  collection,
+  DocumentData,
+  onSnapshot,
+  query,
+  QuerySnapshot,
+  Timestamp,
+  where,
+} from "firebase/firestore";
+import { firestore } from "@/lib/firebase";
+import { getAllMenus } from "@/services/firestore/menu-collection";
+import { Menu } from "@/models/menu";
+import { Transaction } from "@/models/transaction";
 
 export default function ChefPage() {
-  const [orders, setOrders] = useState<ChefOrder[]>(DUMMY_ORDERS);
   const [orderedMenus, setOrderedMenus] = useState<OrderedMenu[]>([]);
 
-  const [selectedOrder, setSelectedOrder] = useState<ChefOrder | null>(null);
   const [selectedOrderedMenu, setSelectedOrderedMenu] =
     useState<OrderedMenu | null>(null);
-
-  // Sort orders berdasarkan waktu terlama (urgent) di atas
-  const sortedOrders = [...orders].sort((a, b) => {
-    return new Date(a.startTime).getTime() - new Date(b.startTime).getTime();
-  });
 
   const { user } = useAuth();
 
@@ -73,25 +34,79 @@ export default function ChefPage() {
       setOrderedMenus([]);
       return;
     }
+
+    let unsub: (() => void) | null = null;
+    let mounted = true;
+
     const fetchOrderedMenus = async () => {
       try {
-        const allOrderedMenus = await getAllOrderedMenus(user.outlet.id, false);
-        setOrderedMenus(allOrderedMenus);
-        console.log("All ordered menu: ", allOrderedMenus);
+        const colRef = collection(
+          firestore,
+          `transactions/${user.outlet.id}/list`
+        );
+        const q = query(colRef, where("isDone", "==", false));
+
+        const allMenus = await getAllMenus();
+        const menuMap = new Map(allMenus.map((menu) => [menu.id, menu]));
+
+        // subscribe to changes
+        unsub = onSnapshot(q, (snapshot: QuerySnapshot<DocumentData>) => {
+          if (!mounted) return;
+          const transactionsData = snapshot.docs.map((docSnap) => {
+            const data = docSnap.data();
+            const timeCreated =
+              data.timeCreated instanceof Timestamp
+                ? data.timeCreated.toMillis()
+                : typeof data.timeCreated === "number"
+                ? data.timeCreated
+                : null;
+            const timeFinished =
+              data.timeFinished instanceof Timestamp
+                ? data.timeFinished.toMillis()
+                : typeof data.timeFinished === "number"
+                ? data.timeFinished
+                : null;
+            const orderedMenus: OrderedMenu[] = data.orderedMenus.map(
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              (orderedMenu: any) =>
+                OrderedMenu.fromJson({
+                  id: orderedMenu.id as string,
+                  menu: menuMap.get(orderedMenu.menu as string) as Menu,
+                  quantity: orderedMenu.quantity as number,
+                  customize: orderedMenu.customize as string | null,
+                  timeCreated: timeCreated,
+                  timeFinished: timeFinished,
+                  isDone: orderedMenu.isDone as boolean,
+                  transactionId: docSnap.id,
+                })
+            );
+            return Transaction.fromJson({
+              id: docSnap.id as string,
+              code: data.code as string,
+              category: data.category as string,
+              orderedMenus: orderedMenus,
+              timeCreated: timeCreated,
+              timeFinished: timeFinished,
+              isDone: data.isDone as boolean,
+            });
+          });
+          const orderedMenus = transactionsData
+            .flatMap((t) => t.orderedMenus)
+            .filter((o) => o.isDone == false)
+            .sort((a, b) => a.timeCreated! - b.timeCreated!);
+          setOrderedMenus(orderedMenus);
+          console.log("Realtime ordered menu:", orderedMenus);
+        });
       } catch (err) {
         console.error(err);
       }
     };
-
     fetchOrderedMenus();
+    return () => {
+      mounted = false;
+      if (unsub) unsub();
+    };
   }, [user]);
-
-  const handleComplete = (orderId: string) => {
-    const order = orders.find((o) => o.id === orderId);
-    if (order) {
-      setSelectedOrder(order);
-    }
-  };
 
   const myHandleComplete = (orderedMenuId: string) => {
     const orderedMenu = orderedMenus.find((o) => o.id === orderedMenuId);
@@ -100,13 +115,6 @@ export default function ChefPage() {
       return;
     }
     setSelectedOrderedMenu(orderedMenu);
-  };
-
-  const handleConfirm = () => {
-    if (selectedOrder) {
-      setOrders((prev) => prev.filter((o) => o.id !== selectedOrder.id));
-      setSelectedOrder(null);
-    }
   };
 
   const myHandleConfirm = async () => {
@@ -131,10 +139,6 @@ export default function ChefPage() {
     }
   };
 
-  const handleCancel = () => {
-    setSelectedOrder(null);
-  };
-
   const myHandleCancel = () => {
     setSelectedOrderedMenu(null);
   };
@@ -144,7 +148,7 @@ export default function ChefPage() {
       <div className="min-h-screen bg-gray-100 p-8">
         <div className="max-w-7xl mx-auto">
           {/* Grid Layout */}
-          {orders.length === 0 ? (
+          {orderedMenus.length === 0 ? (
             <div className="bg-white rounded-2xl shadow-xl p-12 text-center">
               <p className="text-2xl text-gray-500">
                 Tidak ada pesanan saat ini
@@ -152,13 +156,6 @@ export default function ChefPage() {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {sortedOrders.map((order) => (
-                <OrderCard
-                  key={order.id}
-                  order={order}
-                  onComplete={handleComplete}
-                />
-              ))}
               {orderedMenus.map((orderedMenu) => (
                 <OrderedMenuCard
                   key={orderedMenu.id!}
