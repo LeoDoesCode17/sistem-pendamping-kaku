@@ -8,6 +8,7 @@ export class OrderedMenu {
   timeFinished: number | null;
   customize: string | null;
   isDone: boolean;
+  transactionId: string | null;
 
   constructor(params: {
     id: string | null;
@@ -17,6 +18,7 @@ export class OrderedMenu {
     timeFinished: number | null;
     customize: string | null;
     isDone: boolean;
+  transactionId: string | null;
   }) {
     this.id = params.id;
     this.menu = params.menu;
@@ -25,6 +27,7 @@ export class OrderedMenu {
     this.timeCreated = params.timeCreated;
     this.timeFinished = params.timeFinished;
     this.isDone = params.isDone;
+    this.transactionId = params.transactionId
   }
 
   toJson(): {
@@ -49,6 +52,7 @@ export class OrderedMenu {
     timeCreated: number | null;
     timeFinished: number | null;
     isDone: boolean;
+    transactionId: string | null;
   }): OrderedMenu {
     return new OrderedMenu({
       id: data.id,
@@ -58,6 +62,7 @@ export class OrderedMenu {
       timeCreated: data.timeCreated,
       timeFinished: data.timeFinished,
       isDone: data.isDone,
+      transactionId: data.transactionId
     });
   }
 }
