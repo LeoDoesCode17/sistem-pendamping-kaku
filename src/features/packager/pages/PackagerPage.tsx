@@ -79,6 +79,7 @@ export default function PackagerPage() {
                   timeCreated: timeCreated,
                   timeFinished: timeFinished,
                   isDone: orderedMenu.isDone as boolean,
+                  transactionId: docSnap.id
                 })
             );
             return Transaction.fromJson({

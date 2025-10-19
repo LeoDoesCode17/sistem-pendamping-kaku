@@ -59,6 +59,7 @@ export const getAllTransactions = async (
             timeCreated: timeCreated,
             timeFinished: timeFinished,
             isDone: orderedMenu.isDone as boolean,
+            transactionId: docSnap.id
           })
       );
       return Transaction.fromJson({
@@ -144,7 +145,7 @@ export const updateOrderedMenuStatus = async (
 ): Promise<void> => {
   const docRef = doc(
     firestore,
-    `${COLLECTION_NAME}/${outletId}/${transactionId}`
+    `${COLLECTION_NAME}/${outletId}/list/${transactionId}`
   );
   try {
     await runTransaction(firestore, async (tx) => {
@@ -153,7 +154,7 @@ export const updateOrderedMenuStatus = async (
         throw new Error(`Transaction ${transactionId} not found`);
       }
       const data = snap.data();
-      const now = isDone ? serverTimestamp() : deleteField();
+      // const now = isDone ? serverTimestamp() : deleteField();
       let found = false;
       const rawOrdered = Array.isArray(data.orderedMenus)
         ? data.orderedMenus
@@ -163,7 +164,7 @@ export const updateOrderedMenuStatus = async (
         if (orderedMenu.id === orderedMenuId) {
           found = true;
           const currentData = { ...orderedMenu, isDone };
-          currentData.timeFinished = now;
+          // currentData.timeFinished = now;
           return currentData;
         } else {
           return orderedMenu;
@@ -190,14 +191,15 @@ export const updateOrderedMenuStatus = async (
 };
 
 export const getAllOrderedMenus = async (
-  outletId: string
+  outletId: string,
+  isDone?: boolean
 ): Promise<OrderedMenu[]> => {
   try {
     // get all transactions first
     // get all ordered menus from transactions
     // sort it based on timeCreated asc (older first)
-    const transactions = await getAllTransactions(outletId);
-    const orderedMenus = transactions.flatMap((t) => t.orderedMenus);
+    const transactions = await getAllTransactions(outletId, isDone);
+    const orderedMenus = transactions.flatMap((t) => t.orderedMenus).filter((o) => o.isDone == isDone);
     return orderedMenus.sort((a, b) => a.timeCreated! - b.timeCreated!);
   } catch (err) {
     console.error("getAllOrderedMenus error:", err);
