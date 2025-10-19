@@ -75,6 +75,7 @@ export default function OrderPage({
             customize: null,
             timeCreated: null,
             timeFinished: null,
+            transactionId: null,
           }),
         ];
       }
