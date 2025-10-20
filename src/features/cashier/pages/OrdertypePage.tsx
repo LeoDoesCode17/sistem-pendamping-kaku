@@ -17,7 +17,7 @@ export default function OrderTypePage() {
     { id: 'dine-in', name: 'Dine In', icon: <UtensilsCrossed size={32} /> },
     { id: 'take-away', name: 'Take Away', icon: <ShoppingBag size={32} /> },
     { id: 'go-food', name: 'Go Food', icon: <Bike size={32} /> },
-    { id: 'grab-food', name: 'Grab Food', icon: <Package size={32} /> },
+    { id: 'Grab-Food', name: 'Grab Food', icon: <Package size={32} /> },
     { id: 'shopee-food', name: 'Shopee Food', icon: <ShoppingCart size={32} /> },
     { id: 'wa-order', name: 'Wa Order', icon: <MessageSquare size={32} /> },
   ];

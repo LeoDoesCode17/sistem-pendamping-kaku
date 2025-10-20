@@ -4,9 +4,11 @@ import {
   deleteField,
   doc,
   getDocs,
+  query,
   runTransaction,
   serverTimestamp,
   Timestamp,
+  where,
 } from "firebase/firestore";
 import { firestore } from "@/lib/firebase";
 import { Transaction } from "@/models/transaction";
@@ -17,12 +19,18 @@ import { getAllMenus } from "./menu-collection";
 const COLLECTION_NAME = "transactions";
 
 export const getAllTransactions = async (
-  outletId: string
+  outletId: string,
+  isDone?: boolean
 ): Promise<Transaction[]> => {
   try {
-    const colRef = collection(firestore, `${COLLECTION_NAME}/${outletId}`);
+    const colRef = collection(firestore, `${COLLECTION_NAME}/${outletId}/list`);
+    // ✅ Only get transactions where isDone == false
+    const q =
+      typeof isDone === "boolean"
+        ? query(colRef, where("isDone", "==", isDone))
+        : colRef;
     const [querySnapshot, allMenus] = await Promise.all([
-      getDocs(colRef),
+      getDocs(q),
       getAllMenus(),
     ]);
     const menuMap = new Map(allMenus.map((menu) => [menu.id, menu]));
@@ -33,13 +41,13 @@ export const getAllTransactions = async (
           ? data.timeCreated.toMillis()
           : typeof data.timeCreated === "number"
           ? data.timeCreated
-          : undefined;
+          : null;
       const timeFinished =
         data.timeFinished instanceof Timestamp
           ? data.timeFinished.toMillis()
           : typeof data.timeFinished === "number"
           ? data.timeFinished
-          : undefined;
+          : null;
       const orderedMenus: OrderedMenu[] = data.orderedMenus.map(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (orderedMenu: any) =>
@@ -47,10 +55,11 @@ export const getAllTransactions = async (
             id: orderedMenu.id as string,
             menu: menuMap.get(orderedMenu.menu as string) as Menu,
             quantity: orderedMenu.quantity as number,
-            customize: orderedMenu.customize as string | undefined,
+            customize: orderedMenu.customize as string | null,
             timeCreated: timeCreated,
             timeFinished: timeFinished,
             isDone: orderedMenu.isDone as boolean,
+            transactionId: docSnap.id
           })
       );
       return Transaction.fromJson({
@@ -74,11 +83,12 @@ export const createNewTransaction = async (
   transaction: Transaction
 ): Promise<void> => {
   try {
-    const colRef = collection(firestore, `${COLLECTION_NAME}/${outletId}`);
+    const colRef = collection(firestore, `${COLLECTION_NAME}/${outletId}/list`);
     const now = serverTimestamp();
     await addDoc(colRef, {
       ...transaction.toJson(),
       timeCreated: now,
+      timeFinished: now,
     });
   } catch (err) {
     console.error("createNewTransaction error:", err);
@@ -93,7 +103,7 @@ export const updateTransactionStatus = async (
 ): Promise<void> => {
   const docRef = doc(
     firestore,
-    `${COLLECTION_NAME}/${outletId}/${transactionId}`
+    `${COLLECTION_NAME}/${outletId}/list/${transactionId}`
   );
   try {
     // make sure get and update in atomic operation
@@ -110,7 +120,7 @@ export const updateTransactionStatus = async (
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const updatedOrdered = rawOrdered.map((orderedMenu: any) => {
         const currentData = { ...orderedMenu, isDone };
-        currentData.timeFinished = now;
+        // currentData.timeFinished = now;
         return currentData;
       });
       const updatedData = {
@@ -135,7 +145,7 @@ export const updateOrderedMenuStatus = async (
 ): Promise<void> => {
   const docRef = doc(
     firestore,
-    `${COLLECTION_NAME}/${outletId}/${transactionId}`
+    `${COLLECTION_NAME}/${outletId}/list/${transactionId}`
   );
   try {
     await runTransaction(firestore, async (tx) => {
@@ -144,7 +154,7 @@ export const updateOrderedMenuStatus = async (
         throw new Error(`Transaction ${transactionId} not found`);
       }
       const data = snap.data();
-      const now = isDone ? serverTimestamp() : deleteField();
+      // const now = isDone ? serverTimestamp() : deleteField();
       let found = false;
       const rawOrdered = Array.isArray(data.orderedMenus)
         ? data.orderedMenus
@@ -154,7 +164,7 @@ export const updateOrderedMenuStatus = async (
         if (orderedMenu.id === orderedMenuId) {
           found = true;
           const currentData = { ...orderedMenu, isDone };
-          currentData.timeFinished = now;
+          // currentData.timeFinished = now;
           return currentData;
         } else {
           return orderedMenu;
@@ -181,14 +191,15 @@ export const updateOrderedMenuStatus = async (
 };
 
 export const getAllOrderedMenus = async (
-  outletId: string
+  outletId: string,
+  isDone?: boolean
 ): Promise<OrderedMenu[]> => {
   try {
     // get all transactions first
     // get all ordered menus from transactions
     // sort it based on timeCreated asc (older first)
-    const transactions = await getAllTransactions(outletId);
-    const orderedMenus = transactions.flatMap((t) => t.orderedMenus);
+    const transactions = await getAllTransactions(outletId, isDone);
+    const orderedMenus = transactions.flatMap((t) => t.orderedMenus).filter((o) => o.isDone == isDone);
     return orderedMenus.sort((a, b) => a.timeCreated! - b.timeCreated!);
   } catch (err) {
     console.error("getAllOrderedMenus error:", err);
