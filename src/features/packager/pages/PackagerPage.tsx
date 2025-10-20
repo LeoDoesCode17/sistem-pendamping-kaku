@@ -45,7 +45,7 @@ const DUMMY_ORDERS: PackagerOrder[] = [
       { quantity: 1, itemName: 'Pentol Pedas', itemCode: 'PP' },
       { quantity: 1, itemName: 'Bakso Goreng', itemCode: 'BG' }
     ],
-    createdAt: new Date(Date.now() - 690000)
+    createdAt: new Date(Date.now() - 390000)
   },
   {
     id: '4',
