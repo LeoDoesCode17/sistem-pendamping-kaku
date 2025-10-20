@@ -76,7 +76,7 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             onKeyPress={handleKeyPress}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-700 placeholder-gray-400"
+            className="w-full px-3 py-2  text-black border border-gray-300 rounded-lg focus:outline-none focus:border-gray-700 placeholder-gray-400"
             placeholder="Masukkan username"
           />
         </div>
@@ -90,7 +90,7 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             onKeyPress={handleKeyPress}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-700 placeholder-gray-400"
+            className="w-full px-3 py-2 text-black border border-gray-300 rounded-lg focus:outline-none focus:border-gray-700 placeholder-gray-400"
             placeholder="Masukkan password"
           />
         </div>
