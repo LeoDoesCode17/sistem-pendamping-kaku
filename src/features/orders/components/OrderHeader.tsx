@@ -117,11 +117,27 @@ export default function OrderHeader({ orderType, onDataChange }: OrderHeaderProp
     return null;
   };
 
-  return (
+  const fieldCount = config.fields.length;
+  const gridColsClass =
+    fieldCount === 1
+      ? 'md:grid-cols-1'                  // ✅ 1 field → full width
+      : fieldCount === 2
+      ? 'md:grid-cols-2'                  // 2 field → 2 kolom
+      : 'md:grid-cols-2 lg:grid-cols-3';  // 3+ field → rapatkan di lg
+
+  const isSingleField = fieldCount === 1;
+
+    return (
     <div className="bg-white p-6 rounded-lg border-2 border-gray-400 mb-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {config.fields.map(renderField)}
+      {/* 🔽 grid kolom dinamis */}
+      <div className={`grid grid-cols-1 ${gridColsClass} gap-4`}>
+        {config.fields.map((field) => (
+          <div key={field} className={isSingleField ? 'col-span-full' : ''}>
+            {renderField(field)}
+          </div>
+        ))}
       </div>
     </div>
   );
 }
+
