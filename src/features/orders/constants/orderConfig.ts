@@ -1,4 +1,3 @@
-// features/orders/constants/orderConfig.ts
 interface OrderConfigItem {
   fields: string[];
   labels: Record<string, string>;
@@ -8,42 +7,36 @@ interface OrderConfigItem {
 export const ORDER_CONFIG: Record<string, OrderConfigItem> = {
   'dine-in': {
     fields: ['customerName'],
-    labels: {
-      customerName: 'Nama Pemesan'
-    }
+    labels: { customerName: 'Nama Pemesan' },
   },
   'take-away': {
     fields: ['customerName'],
-    labels: {
-      customerName: 'Nama Pemesan'
-    }
+    labels: { customerName: 'Nama Pemesan' },
   },
   'grab-food': {
     fields: ['orderCode'],
-    labels: {
-      orderCode: 'Kode Pesanan'
-    },
-    prefix: 'GF - '
+    labels: { orderCode: 'Kode Pesanan' },
+    prefix: 'GF - ',
   },
   'go-food': {
-    fields: ['orderCode'],
+    // ✅ tampilkan 2 input: kode pesanan + kode angka (opsional)
+    fields: ['orderCode', 'gofoodCode'],
     labels: {
-      orderCode: 'Kode Pesanan'
+      orderCode: 'Kode Pesanan',
+      gofoodCode: 'Kode GoFood (opsional)',
     },
-    prefix: 'GO - '
+    prefix: 'GO - ',
   },
   'shopee-food': {
     fields: ['orderCode'],
-    labels: {
-      orderCode: 'Kode Pesanan'
-    },
-    prefix: '# '
+    labels: { orderCode: 'Kode Pesanan' },
+    prefix: '# ',
   },
   'wa-order': {
     fields: ['customerName', 'phoneNumber'],
     labels: {
       customerName: 'Nama Pemesan',
-      phoneNumber: 'Nomor Telepon'
-    }
-  }
+      phoneNumber: 'Nomor Telepon',
+    },
+  },
 };
