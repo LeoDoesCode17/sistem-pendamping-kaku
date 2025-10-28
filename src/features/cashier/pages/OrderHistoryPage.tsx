@@ -106,6 +106,7 @@ const DUMMY_ORDERS: OrderHistory[] = [
       : i % 6 === 3 ? 'Dian Sasmita'
       : i % 6 === 4 ? 'Rangga'
       : 'Nina',
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     orderType: (['go-food', 'grab-food', 'shopee-food', 'dine-in', 'take-away', 'wa-order'][i % 6] as any),
     orderCode: i % 6 === 0 ? '910' : undefined,
     phone: i % 6 === 5 ? '0851-7777-8888' : undefined,
