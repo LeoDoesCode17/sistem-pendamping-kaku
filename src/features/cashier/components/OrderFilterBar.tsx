@@ -62,14 +62,14 @@ export default function OrderFilterBar({ onFilterChange }: OrderFilterBarProps) 
             type="date"
             value={startDate}
             onChange={(e) => handleDateChange(e.target.value, endDate)}
-            className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-maroon"
+            className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-maroon text-black"
           />
           <span className="text-gray-500">-</span>
           <input
             type="date"
             value={endDate}
             onChange={(e) => handleDateChange(startDate, e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-maroon"
+            className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-maroon text-black"
           />
         </div>
 
@@ -79,7 +79,7 @@ export default function OrderFilterBar({ onFilterChange }: OrderFilterBarProps) 
           <select
             value={selectedType}
             onChange={(e) => handleTypeChange(e.target.value as OrderType | 'all')}
-            className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-maroon"
+            className="px-3 py-2 border border-gray-300 text-black rounded-lg text-sm focus:outline-none focus:border-maroon"
           >
             {ORDER_TYPES.map((type) => (
               <option key={type.value} value={type.value}>
