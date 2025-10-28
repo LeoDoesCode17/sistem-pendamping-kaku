@@ -3,7 +3,6 @@ export enum MenuCategory {
   Rebusan = "REBUSAN",
   Minuman = "MINUMAN",
   Cimol = "CIMOL",
-  Pisrol = "PISANG ROLL TOPPING",
-  Pistop = "PISANG GORENG TOPPING",
-  Pisnug = "PISANG NUGGET TOPPING",
+  Pisang = "PISANG",
+  Sambal = "SAMBAL",
 }
