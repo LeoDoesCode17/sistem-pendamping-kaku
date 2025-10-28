@@ -1,3 +1,4 @@
+// features/orders/components/OrderHeader.tsx
 'use client';
 
 import { useState } from 'react';
@@ -9,24 +10,39 @@ interface OrderHeaderProps {
   onDataChange?: (data: OrderHeaderData) => void;
 }
 
+// helper untuk escape prefix ke regex
+const escapeRegex = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+// Normalisasi orderCode:
+// - Hapus semua prefix berulang di depan
+// - Jika setelah dihapus tidak ada isi => return ''
+// - Jika ada isi => kembalikan prefix + isi (tanpa prefix dobel)
+const normalizeOrderCode = (input: string, prefix: string) => {
+  let s = input ?? '';
+  const re = new RegExp(`^${escapeRegex(prefix)}\\s*`, 'i');
+  // buang semua prefix di depan (bisa dobel)
+  while (re.test(s)) s = s.replace(re, '');
+  if (s.trim().length === 0) return '';             // boleh kosong
+  return `${prefix}${s}`;                            // satu prefix saja
+};
+
 export default function OrderHeader({ orderType, onDataChange }: OrderHeaderProps) {
   const config = ORDER_CONFIG[orderType];
 
   const [formData, setFormData] = useState<OrderHeaderData>({
     customerName: '',
-    orderCode: config.prefix || '',
+    // ❌ jangan prefill dengan prefix, biarin kosong
+    orderCode: '',
     phoneNumber: '',
-    gofoodCode: '', // ✅ default
+    gofoodCode: '',
   });
 
   const handleInputChange = (field: keyof OrderHeaderData, value: string) => {
     let newValue = value;
 
-    // Pastikan prefix tetap ada untuk field orderCode yang punya prefix
+    // ✅ Pertahankan prefix hanya jika ada konten; boleh kosong total
     if (field === 'orderCode' && config.prefix) {
-      if (!value.startsWith(config.prefix)) {
-        newValue = config.prefix + value.replace(config.prefix, '');
-      }
+      newValue = normalizeOrderCode(value, config.prefix);
     }
 
     const newData = { ...formData, [field]: newValue };
@@ -43,7 +59,7 @@ export default function OrderHeader({ orderType, onDataChange }: OrderHeaderProp
           <label className="block text-sm font-semibold text-maroon mb-2">{label}</label>
           <input
             type="text"
-            value={formData.customerName}
+            value={formData.customerName ?? ''}
             onChange={(e) => handleInputChange('customerName', e.target.value)}
             className="w-full px-4 py-3 border-2 border-gray-400 rounded-lg focus:outline-none focus:border-maroon text-black font-medium"
             placeholder="Masukkan nama"
@@ -58,7 +74,7 @@ export default function OrderHeader({ orderType, onDataChange }: OrderHeaderProp
           <label className="block text-sm font-semibold text-maroon mb-2">{label}</label>
           <input
             type="text"
-            value={formData.gofoodCode}
+            value={formData.gofoodCode ?? ''}
             onChange={(e) => handleInputChange('gofoodCode', e.target.value)}
             className="w-full px-4 py-3 border-2 border-gray-400 rounded-lg focus:outline-none focus:border-maroon text-black font-medium"
             placeholder="Masukkan kode GoFood (opsional)"
@@ -73,9 +89,10 @@ export default function OrderHeader({ orderType, onDataChange }: OrderHeaderProp
           <label className="block text-sm font-semibold text-maroon mb-2">{label}</label>
           <input
             type="text"
-            value={formData.orderCode}
+            value={formData.orderCode ?? ''}
             onChange={(e) => handleInputChange('orderCode', e.target.value)}
             className="w-full px-4 py-3 border-2 border-gray-400 rounded-lg focus:outline-none focus:border-maroon text-black font-medium"
+            // ✅ placeholder tampilkan prefix, tapi value boleh kosong
             placeholder={config.prefix ? `${config.prefix}kode pesanan` : 'Masukkan kode'}
           />
         </div>
@@ -88,7 +105,7 @@ export default function OrderHeader({ orderType, onDataChange }: OrderHeaderProp
           <label className="block text-sm font-semibold text-maroon mb-2">{label}</label>
           <input
             type="tel"
-            value={formData.phoneNumber}
+            value={formData.phoneNumber ?? ''}
             onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
             className="w-full px-4 py-3 border-2 border-gray-400 rounded-lg focus:outline-none focus:border-maroon text-black font-medium"
             placeholder="08xx xxxx xxxx"
@@ -102,7 +119,6 @@ export default function OrderHeader({ orderType, onDataChange }: OrderHeaderProp
 
   return (
     <div className="bg-white p-6 rounded-lg border-2 border-gray-400 mb-6">
-      {/* ✅ grid 2 kolom biar rapi untuk 2 input */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {config.fields.map(renderField)}
       </div>
