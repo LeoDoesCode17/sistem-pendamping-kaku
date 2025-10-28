@@ -18,7 +18,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           backPath={isOrderTypePage ? "/cashier" : undefined} // Specify back path
         />
       )}
-      <main className={isOrderPage ? "" : "h-[calc(100vh-80px)]"}>
+      <main
+        className={
+          isOrderPage
+            ? ""
+            : "h-[calc(100vh-80px)] overflow-y-auto overscroll-contain"
+        }
+      >
         {children}
       </main>
     </div>
