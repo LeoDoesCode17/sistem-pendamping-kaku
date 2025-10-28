@@ -1,15 +1,14 @@
-// features/orders/utils/validation.ts
 import { ORDER_CONFIG } from '../constants/orderConfig';
 import { OrderHeaderData, OrderType } from '../types/order';
 import { OrderedMenu } from '@/models/ordered-menu';
 
-const nonEmpty = (v?: string) => !!(v && v.trim().length > 0);
+const nonEmpty = (v?: string, prefix?: string) => {
+  if (!v) return false;
+  const trimmed = v.trim();
+  if (prefix && trimmed === prefix.trim()) return false; // hanya prefix → kosong
+  return trimmed.length > 0;
+};
 
-/**
- * Validasi sebelum konfirmasi pesanan.
- * - Cek minimal 1 item di keranjang
- * - Cek field wajib berdasarkan ORDER_CONFIG untuk orderType saat ini
- */
 export function validateBeforeSubmit(params: {
   orderType: OrderType;
   orderData: OrderHeaderData;
@@ -25,15 +24,23 @@ export function validateBeforeSubmit(params: {
   const missing: string[] = [];
 
   for (const f of cfg.fields) {
+    if (f === 'gofoodCode') continue; // opsional
+
     switch (f) {
       case 'customerName':
-        if (!nonEmpty(orderData.customerName)) missing.push(cfg.labels.customerName ?? 'Nama pembeli');
+        if (!nonEmpty(orderData.customerName)) {
+          missing.push(cfg.labels.customerName ?? 'Nama pembeli');
+        }
         break;
       case 'orderCode':
-        if (!nonEmpty(orderData.orderCode)) missing.push(cfg.labels.orderCode ?? 'Kode pesanan');
+        if (!nonEmpty(orderData.orderCode, cfg.prefix)) {
+          missing.push(cfg.labels.orderCode ?? 'Kode pesanan');
+        }
         break;
       case 'phoneNumber':
-        if (!nonEmpty(orderData.phoneNumber)) missing.push(cfg.labels.phoneNumber ?? 'Nomor telepon');
+        if (!nonEmpty(orderData.phoneNumber)) {
+          missing.push(cfg.labels.phoneNumber ?? 'Nomor telepon');
+        }
         break;
       default:
         break;
@@ -41,7 +48,6 @@ export function validateBeforeSubmit(params: {
   }
 
   if (missing.length > 0) {
-    // Bahasa UI: jangan sebut "OrderHeader"
     const labelList =
       missing.length === 1
         ? missing[0]
