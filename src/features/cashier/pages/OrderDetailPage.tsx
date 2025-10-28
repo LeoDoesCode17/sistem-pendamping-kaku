@@ -51,8 +51,6 @@ export default function OrderDetailPage({ orderId }: OrderDetailPageProps) {
     }, 400);
   }, [orderId]);
 
-  const handleBack = () => router.push('/cashier/riwayat-pesanan');
-
   const formatDate = (date: Date) =>
     new Intl.DateTimeFormat('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
       .format(new Date(date));
@@ -69,13 +67,6 @@ export default function OrderDetailPage({ orderId }: OrderDetailPageProps) {
     return (
       <div className="min-h-screen bg-gray-50 p-8">
         <div className="max-w-4xl mx-auto">
-          <button
-            onClick={handleBack}
-            className="flex items-center gap-2 text-maroon hover:text-maroon2 font-semibold mb-6 transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            Kembali
-          </button>
           <div className="bg-white rounded-lg border-2 border-gray-200 p-12 text-center">
             <p className="text-xl text-gray-500">Pesanan tidak ditemukan</p>
           </div>
@@ -87,14 +78,7 @@ export default function OrderDetailPage({ orderId }: OrderDetailPageProps) {
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-4xl mx-auto">
-        {/* Back Button */}
-        <button
-          onClick={handleBack}
-          className="flex items-center gap-2 text-maroon hover:text-maroon2 font-semibold mb-6 transition-colors"
-        >
-          <ArrowLeft className="w-5 h-5" />
-          Kembali
-        </button>
+
 
         {/* Header */}
         <h1 className="text-3xl font-bold text-maroon mb-6">Detail Pesanan</h1>
