@@ -1,8 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { ArrowLeft } from 'lucide-react';
 import { OrderHistory } from '../types/order-history';
 import OrderDetailTable from '../components/OrderDetailTable';
 import PerformanceStats from '../components/PerformanceStats';
@@ -39,7 +37,6 @@ const ORDER_TYPE_LABELS: Record<string, string> = {
 };
 
 export default function OrderDetailPage({ orderId }: OrderDetailPageProps) {
-  const router = useRouter();
   const [order, setOrder] = useState<OrderHistory | null>(null);
   const [loading, setLoading] = useState(true);
 
