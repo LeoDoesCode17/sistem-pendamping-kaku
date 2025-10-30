@@ -65,7 +65,7 @@ export default function LogoutButton({
           'min-h-[44px] min-w-[44px]',              // target sentuh nyaman
           'rounded-xl p-2',
           // background semi-transparan supaya ripple kelihatan
-          'bg-white/10 hover:bg-white/15 active:bg-white/25',
+          'hover:bg-white/15 active:bg-white/25',
           // pressed feedback
           'transition-transform active:scale-[0.96]',
           'focus:outline-none focus:ring-2 focus:ring-white/40',

@@ -1,9 +1,8 @@
 'use client';
 
 import Time from '@/features/ui/Clock';
-import { ArrowLeft } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import LogoutButton from '@/features/auth/components/LogoutButton';
+import IconBackButton from '@/features/ui/Button/IconBackButton'; // ⬅️ import baru
 
 interface TopbarMainProps {
   pageType: 'Kasir' | 'Chef' | 'Packager';
@@ -16,24 +15,11 @@ export default function TopbarMain({
   showBackButton = false,
   backPath,
 }: TopbarMainProps) {
-  const router = useRouter();
-
-  const handleBack = () => {
-    if (backPath) router.push(backPath);
-    else router.back();
-  };
-
   return (
     <div className="relative flex items-center justify-between bg-maroon px-8 py-4 shadow-lg">
       {/* Left button: Back OR Logout */}
       {showBackButton ? (
-        <button
-          className="z-10 text-cream"
-          aria-label="Back"
-          onClick={handleBack}
-        >
-          <ArrowLeft />
-        </button>
+        <IconBackButton backPath={backPath} /> // ⬅️ pakai komponen baru
       ) : (
         <LogoutButton className="z-10 text-cream" />
       )}
