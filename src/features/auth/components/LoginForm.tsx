@@ -1,26 +1,37 @@
 'use client';
 
-import { Role } from '@/types/role';
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthProvider';
+import { Role } from '@/types/role';
 
-
-interface LoginFormProps {
-  onLogin: (role: string) => void;
-}
-
-export default function LoginForm({ onLogin }: LoginFormProps) {
+export default function LoginForm() {
   const router = useRouter();
+  const params = useSearchParams();
   const { signInEmail } = useAuth();
+
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async () => {
-    setError('');
+  // Helper untuk tentukan home berdasarkan role
+  const roleHome = (role?: Role | string) => {
+    switch (role) {
+      case Role.Cashier:
+        return '/cashier';
+      case Role.Chef:
+        return '/chef';
+      case Role.Packager:
+        return '/packager';
+      default:
+        return '/';
+    }
+  };
 
+  const handleSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    setError('');
 
     if (!username || !password) {
       setError('Username dan password harus diisi');
@@ -28,22 +39,19 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
     }
 
     setLoading(true);
-
     try {
       const user = await signInEmail(username, password);
-      console.log(username, password);
-      console.log(user);
-
-      if (user!.role == Role.Cashier) {
-        router.push('/cashier');
-      } else if (user!.role == Role.Chef) {
-        router.push('/chef');
-      } else if (user!.role == Role.Packager) {
-        router.push('/packager');
+      if (!user) {
+        setError('Email atau password salah.');
+        return;
       }
 
+      // redirect ke ?from=... kalau ada, atau ke home sesuai role
+      const from = params.get('from');
+      const redirectTo = from || roleHome(user.role);
+      router.replace(redirectTo);
     } catch (err) {
-      console.error('Error when login ', err)
+      console.error('Error saat login:', err);
       setError('Terjadi kesalahan. Silakan coba lagi.');
     } finally {
       setLoading(false);
@@ -51,9 +59,7 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleSubmit();
-    }
+    if (e.key === 'Enter') handleSubmit();
   };
 
   return (
@@ -66,7 +72,7 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
         </div>
       )}
 
-      <div className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block text-maroon text-sm font-bold mb-2">
             Username
@@ -76,7 +82,7 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             onKeyPress={handleKeyPress}
-            className="w-full px-3 py-2  text-black border border-gray-300 rounded-lg focus:outline-none focus:border-gray-700 placeholder-gray-400"
+            className="w-full px-3 py-2 text-black border border-gray-300 rounded-lg focus:outline-none focus:border-gray-700 placeholder-gray-400"
             placeholder="Masukkan username"
           />
         </div>
@@ -96,13 +102,13 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
         </div>
 
         <button
-          onClick={handleSubmit}
+          type="submit"
           disabled={loading}
           className="w-full bg-gradient-to-r from-red-900 to-red-800 text-white font-bold py-3 px-4 rounded-lg hover:from-red-800 hover:to-red-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading ? 'Loading...' : 'Login'}
         </button>
-      </div>
+      </form>
     </div>
   );
 }
