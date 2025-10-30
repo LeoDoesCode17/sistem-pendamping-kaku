@@ -1,52 +1,52 @@
-// features/ui/Topbar/TopbarMain.tsx
-"use client";
+'use client';
 
-import Time from '@/features/ui/Clock'
-import { LogOut, ArrowLeft } from 'lucide-react';
+import Time from '@/features/ui/Clock';
+import { ArrowLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import LogoutButton from '@/features/auth/components/LogoutButton';
 
 interface TopbarMainProps {
-  pageType: "Kasir" | "Chef" | "Packager";
+  pageType: 'Kasir' | 'Chef' | 'Packager';
   showBackButton?: boolean;
   backPath?: string;
 }
 
-export default function TopbarMain({ 
-  pageType, 
+export default function TopbarMain({
+  pageType,
   showBackButton = false,
-  backPath
+  backPath,
 }: TopbarMainProps) {
   const router = useRouter();
 
-  const handleLogout = () => {
-    router.push('/login');
-  };
-
   const handleBack = () => {
-    if (backPath) {
-      router.push(backPath);
-    } else {
-      router.back();
-    }
+    if (backPath) router.push(backPath);
+    else router.back();
   };
 
   return (
-    <div className="bg-maroon px-8 py-4 flex justify-between items-center shadow-lg relative">
-      <button 
-        className="text-cream z-10"
-        aria-label={showBackButton ? "Back" : "Logout"}
-        onClick={showBackButton ? handleBack : handleLogout}
-      >
-        {showBackButton ? <ArrowLeft /> : <LogOut />}
-      </button>
+    <div className="relative flex items-center justify-between bg-maroon px-8 py-4 shadow-lg">
+      {/* Left button: Back OR Logout */}
+      {showBackButton ? (
+        <button
+          className="z-10 text-cream"
+          aria-label="Back"
+          onClick={handleBack}
+        >
+          <ArrowLeft />
+        </button>
+      ) : (
+        <LogoutButton className="z-10 text-cream" />
+      )}
 
+      {/* Center title */}
       <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center">
-        <h1 className="text-cream text-xl font-bold tracking-wide">Kaku Food</h1>
-        <div className="bg-maroon2 text-cream rounded-xl border-2 border-cream px-4 py-px text-lg font-bold">
+        <h1 className="text-xl font-bold tracking-wide text-cream">Kaku Food</h1>
+        <div className="rounded-xl border-2 border-cream bg-maroon2 px-4 py-px text-lg font-bold text-cream">
           {pageType}
         </div>
       </div>
 
+      {/* Right clock */}
       <Time />
     </div>
   );
