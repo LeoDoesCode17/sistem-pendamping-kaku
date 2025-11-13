@@ -52,6 +52,14 @@ export interface FilterOptions {
   orderType?: OrderType | 'all';
 }
 
+export interface MyFilterOptions {
+  dateRange?: {
+    start: string,
+    end: string,
+  };
+  transactionCategory?: string;
+}
+
 export interface PaginationInfo {
   currentPage: number;
   totalPages: number;
