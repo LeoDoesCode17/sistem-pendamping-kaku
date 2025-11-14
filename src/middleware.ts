@@ -31,6 +31,16 @@ export function middleware(req: NextRequest) {
     return NextResponse.redirect(url);
   }
 
+  if (pathname === '/' || pathname === '/login') {
+    const homePath = roleHome[role];
+    if (homePath) {
+      // Jika role terdaftar di roleHome, arahkan ke halaman home-nya
+      return NextResponse.redirect(new URL(homePath, req.url));
+    }
+    // Opsional: Jika role tidak terdaftar, bisa diarahkan ke halaman default atau tetap diizinkan
+    // Dalam kasus ini, kita biarkan saja lanjut (atau bisa arahkan ke /login sebagai fallback)
+  }
+
   // role-based guard
   if (pathname.startsWith('/cashier') && role !== 'cashier') {
     return NextResponse.redirect(new URL(roleHome[role] ?? '/login', req.url));
