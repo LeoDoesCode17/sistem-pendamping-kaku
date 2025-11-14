@@ -3,6 +3,7 @@ import {
   collection,
   deleteField,
   doc,
+  getDoc,
   getDocs,
   query,
   runTransaction,
@@ -59,7 +60,7 @@ export const getAllTransactions = async (
             timeCreated: timeCreated,
             timeFinished: timeFinished,
             isDone: orderedMenu.isDone as boolean,
-            transactionId: docSnap.id
+            transactionId: docSnap.id,
           })
       );
       return Transaction.fromJson({
@@ -199,10 +200,70 @@ export const getAllOrderedMenus = async (
     // get all ordered menus from transactions
     // sort it based on timeCreated asc (older first)
     const transactions = await getAllTransactions(outletId, isDone);
-    const orderedMenus = transactions.flatMap((t) => t.orderedMenus).filter((o) => o.isDone == isDone);
+    const orderedMenus = transactions
+      .flatMap((t) => t.orderedMenus)
+      .filter((o) => o.isDone == isDone);
     return orderedMenus.sort((a, b) => a.timeCreated! - b.timeCreated!);
   } catch (err) {
     console.error("getAllOrderedMenus error:", err);
+    throw err;
+  }
+};
+
+export const getTransactionById = async (
+  outletId: string,
+  transactionId: string
+): Promise<Transaction> => {
+  try {
+    const colRef = doc(
+      firestore,
+      `${COLLECTION_NAME}/${outletId}/list/${transactionId}`
+    );
+    const [snap, allMenus] = await Promise.all([getDoc(colRef), getAllMenus()]);
+    if (!snap.exists()) {
+      const msg = "No transaction with id: " + transactionId;
+      console.error(msg);
+      throw new Error(msg);
+    }
+    const menuMap = new Map(allMenus.map((menu) => [menu.id, menu]));
+    const data = snap.data();
+    const timeCreated =
+      data.timeCreated instanceof Timestamp
+        ? data.timeCreated.toMillis()
+        : typeof data.timeCreated === "number"
+        ? data.timeCreated
+        : null;
+    const timeFinished =
+      data.timeFinished instanceof Timestamp
+        ? data.timeFinished.toMillis()
+        : typeof data.timeFinished === "number"
+        ? data.timeFinished
+        : null;
+    const orderedMenus: OrderedMenu[] = data.orderedMenus.map(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (orderedMenu: any) =>
+        OrderedMenu.fromJson({
+          id: orderedMenu.id as string,
+          menu: menuMap.get(orderedMenu.menu as string) as Menu,
+          quantity: orderedMenu.quantity as number,
+          customize: orderedMenu.customize as string | null,
+          timeCreated: timeCreated,
+          timeFinished: timeFinished,
+          isDone: orderedMenu.isDone as boolean,
+          transactionId: snap.id,
+        })
+    );
+    return Transaction.fromJson({
+      id: snap.id as string,
+      code: data.code as string,
+      category: data.category as string,
+      orderedMenus: orderedMenus,
+      timeCreated: timeCreated,
+      timeFinished: timeFinished,
+      isDone: data.isDone as boolean,
+    });
+  } catch (err) {
+    console.error("getTransactionById error:", err);
     throw err;
   }
 };
