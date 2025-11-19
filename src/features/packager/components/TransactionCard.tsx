@@ -94,7 +94,7 @@ export default function TransactionCard({
             className="px-4 py-3 border-b last:border-b-0 border-gray-200"
           >
             <div className="font-semibold text-gray-800">
-              {item.quantity} x {item.menu.name} ({item.menu.abbreviation})
+              {item.quantity} x {item.menu.name} 
             </div>
           </div>
         ))}
