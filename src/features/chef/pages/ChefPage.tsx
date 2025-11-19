@@ -177,7 +177,7 @@ export default function ChefPage() {
       /> */}
       <ConfirmationModal
         isOpen={selectedOrderedMenu !== null}
-        orderCode={selectedOrderedMenu?.menu.abbreviation || ""}
+        orderCode={selectedOrderedMenu?.menu.name || ""}
         onConfirm={myHandleConfirm}
         onCancel={myHandleCancel}
       />
