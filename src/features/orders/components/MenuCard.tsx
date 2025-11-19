@@ -8,7 +8,7 @@ interface MenuCardProps {
 }
 
 export default function MenuCard({ item, onClick }: MenuCardProps) {
-  const label = item.name + ` (${item.abbreviation})`
+  const label = item.name 
   return (
     <button
       onClick={() => onClick(item)}

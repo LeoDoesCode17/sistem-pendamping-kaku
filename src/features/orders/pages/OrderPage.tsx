@@ -66,11 +66,11 @@ export default function OrderPage({
   const myHandleMenuItemClick = (item: Menu) => {
     setMyCartItems((prev) => {
       const existingItem = prev.find(
-        (cartItem) => cartItem.menu.abbreviation === item.abbreviation
+        (cartItem) => cartItem.menu.name === item.name
       );
       if (existingItem) {
         return prev.map((cartItem) =>
-          cartItem.menu.abbreviation === item.abbreviation
+          cartItem.menu.name === item.name
             ? OrderedMenu.fromJson({
                 ...cartItem,
                 quantity: cartItem.quantity + 1,
