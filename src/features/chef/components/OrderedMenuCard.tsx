@@ -47,7 +47,7 @@ export default function OrderedMenuCard({
     <div className={`bg-white rounded-2xl shadow-xl p-8 border-4 ${getBorderColor(elapsedTime)} hover:shadow-2xl transition-shadow`}>
       <div className="flex flex-col items-center mb-6">
         <div className="text-3xl font-bold text-gray-800 mb-2">
-          {orderedMenu.quantity} x ({orderedMenu.menu.abbreviation}) 
+          {orderedMenu.quantity} x ({orderedMenu.menu.name}) 
         </div>
         <div className={`text-6xl font-black ${getTimeColor(elapsedTime)}`}>
           {formatTime(elapsedTime)}

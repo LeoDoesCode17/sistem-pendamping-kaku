@@ -31,7 +31,7 @@ export default function TransactionDetailTable({ items }: TransactionDetailTable
             >
               <td className="px-6 py-4 text-gray-800">
                 <span className="font-semibold">{item.menu.name}</span>
-                <span className="text-gray-500 ml-2">({item.menu.abbreviation})</span>
+                {/* <span className="text-gray-500 ml-2">({item.menu.name})</span> */}
               </td>
               <td className="px-6 py-4 text-center font-bold text-maroon">
                 {item.quantity}

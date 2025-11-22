@@ -108,7 +108,7 @@ export default function TransactionDetailModal({
                 className="bg-gray-50 rounded-lg px-4 py-3 border border-gray-200"
               >
                 <div className="font-semibold text-gray-800 text-lg">
-                  {item.quantity} x {item.menu.name} ({item.menu.abbreviation})
+                  {item.quantity} x {item.menu.name} 
                 </div>
               </div>
             ))}
