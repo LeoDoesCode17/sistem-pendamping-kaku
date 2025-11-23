@@ -25,6 +25,10 @@ export default function LoginForm() {
       case Role.Packager:
       case 'packager':
         return '/packager';
+      case 'super_admin':
+        return '/super-admin';
+      case 'admin':
+        return '/admin';
       default:
         return '/';
     }
