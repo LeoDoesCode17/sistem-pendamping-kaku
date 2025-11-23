@@ -5,6 +5,8 @@ const roleHome: Record<string, string> = {
   cashier: '/cashier',
   chef: '/chef',
   packager: '/packager',
+  admin: '/admin',
+  super_admin: '/super-admin',
 };
 
 export function middleware(req: NextRequest) {
@@ -49,6 +51,12 @@ export function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL(roleHome[role] ?? '/login', req.url));
   }
   if (pathname.startsWith('/packager') && role !== 'packager') {
+    return NextResponse.redirect(new URL(roleHome[role] ?? '/login', req.url));
+  }
+  if (pathname.startsWith('/admin') && role !== 'admin') {
+    return NextResponse.redirect(new URL(roleHome[role] ?? '/login', req.url));
+  }
+  if (pathname.startsWith('/super-admin') && role !== 'super_admin') {
     return NextResponse.redirect(new URL(roleHome[role] ?? '/login', req.url));
   }
 
