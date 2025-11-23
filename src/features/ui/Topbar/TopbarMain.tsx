@@ -5,7 +5,7 @@ import LogoutButton from '@/features/auth/components/LogoutButton';
 import IconBackButton from '@/features/ui/Button/IconBackButton'; // ⬅️ import baru
 
 interface TopbarMainProps {
-  pageType: 'Kasir' | 'Chef' | 'Packager';
+  pageType: 'Kasir' | 'Chef' | 'Packager' | 'Admin' | 'Super Admin';
   showBackButton?: boolean;
   backPath?: string;
 }

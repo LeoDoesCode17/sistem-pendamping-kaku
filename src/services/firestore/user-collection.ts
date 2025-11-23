@@ -1,7 +1,4 @@
-import {
-  doc,
-  getDoc,
-} from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import { firestore } from "@/lib/firebase";
 import { User } from "@/models/user";
 import { Role } from "@/types/role";
@@ -38,3 +35,16 @@ export async function getUserById(id: string): Promise<User> {
     throw new Error(msg);
   }
 }
+
+export const saveUser = async (user: User): Promise<void> => {
+  try {
+    await setDoc(doc(firestore, COLLECTION_NAME, user.id), {
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      outlet: user.outlet.id,
+    });
+  } catch (err) {
+    throw err;
+  }
+};
