@@ -26,7 +26,7 @@ export default function SuperAdmin() {
     { id: "list-user", name: "List User", icon: <UtensilsCrossed size={32} /> },
     {
       id: "list-outlet",
-      name: "List Outlet",
+      name: "Outlet Management",
       icon: <UtensilsCrossed size={32} />,
     },
   ];
