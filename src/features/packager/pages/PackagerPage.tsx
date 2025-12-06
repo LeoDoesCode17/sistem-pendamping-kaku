@@ -103,17 +103,6 @@ export default function PackagerPage() {
           setTransactions(sortedTransaction);
           console.log("Realtime transactions:", sortedTransaction);
         });
-        // const allTransactions = await getAllTransactions(user.outlet.id, false);
-        // const sortedTransaction = [...allTransactions].sort((a, b) => {
-        //   const now = new Date().getTime();
-        //   const remainingA =
-        //     720000 - (now - new Date(a.timeCreated!).getTime());
-        //   const remainingB =
-        //     720000 - (now - new Date(b.timeCreated!).getTime());
-        //   return remainingA - remainingB;
-        // });
-        // setTransactions(sortedTransaction);
-        // console.log("All transactions: ", sortedTransaction);
       } catch (err) {
         console.error(err);
       }
