@@ -158,9 +158,9 @@ export default function PackagerPage() {
 
   return (
     <>
-      <div className="min-h-screen bg-gray-100 p-8">
+      <div className="min-h-screen bg-gray-100 p-4 md:p-6 lg:p-8">
         <div className="max-w-7xl mx-auto">
-          {/* Grid Layout */}
+          {/* Grid Layout - Responsive */}
           {transactions.length === 0 ? (
             <div className="bg-white rounded-2xl shadow-xl p-12 text-center">
               <p className="text-2xl text-gray-500">
@@ -168,7 +168,7 @@ export default function PackagerPage() {
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4">
               {transactions.map((transaction) => (
                 <TransactionCard
                   onClick={myHandleCardClick}
