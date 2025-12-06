@@ -6,7 +6,8 @@ import ConfirmationModal from "../components/ConfirmationModal";
 import { OrderedMenu } from "@/models/ordered-menu";
 import { useAuth } from "@/context/AuthProvider";
 import { updateOrderedMenuStatus } from "@/services/firestore/transaction-collection";
-import OrderedMenuCard from "../components/OrderedMenuCard";
+import OrderedMenuListItem from "../components/OrderedMenuListItem";
+import QueueInfoModal from "../components/QueueInfoModal";
 import {
   collection,
   DocumentData,
@@ -20,12 +21,12 @@ import { firestore } from "@/lib/firebase";
 import { getAllMenus } from "@/services/firestore/menu-collection";
 import { Menu } from "@/models/menu";
 import { Transaction } from "@/models/transaction";
+import { Clock } from 'lucide-react';
 
 export default function ChefPage() {
   const [orderedMenus, setOrderedMenus] = useState<OrderedMenu[]>([]);
-
-  const [selectedOrderedMenu, setSelectedOrderedMenu] =
-    useState<OrderedMenu | null>(null);
+  const [selectedOrderedMenu, setSelectedOrderedMenu] = useState<OrderedMenu | null>(null);
+  const [showQueueModal, setShowQueueModal] = useState(false);
 
   const { user } = useAuth();
 
@@ -49,7 +50,6 @@ export default function ChefPage() {
         const allMenus = await getAllMenus();
         const menuMap = new Map(allMenus.map((menu) => [menu.id, menu]));
 
-        // subscribe to changes
         unsub = onSnapshot(q, (snapshot: QuerySnapshot<DocumentData>) => {
           if (!mounted) return;
           const transactionsData = snapshot.docs.map((docSnap) => {
@@ -67,7 +67,6 @@ export default function ChefPage() {
                 ? data.timeFinished
                 : null;
             const orderedMenus: OrderedMenu[] = data.orderedMenus.map(
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               (orderedMenu: any) =>
                 OrderedMenu.fromJson({
                   id: orderedMenu.id as string,
@@ -123,7 +122,6 @@ export default function ChefPage() {
       return;
     }
     try {
-      // mark the selectedOrderedMenu as done
       await updateOrderedMenuStatus(
         user.outlet.id,
         selectedOrderedMenu.transactionId!,
@@ -143,11 +141,15 @@ export default function ChefPage() {
     setSelectedOrderedMenu(null);
   };
 
+  const displayedMenus = orderedMenus.slice(0, 10);
+  const queuedMenus = orderedMenus.slice(10);
+  const leftColumn = displayedMenus.slice(0, 5);
+  const rightColumn = displayedMenus.slice(5, 10);
+
   return (
     <>
       <div className="min-h-screen bg-gray-100 p-8">
         <div className="max-w-7xl mx-auto">
-          {/* Grid Layout */}
           {orderedMenus.length === 0 ? (
             <div className="bg-white rounded-2xl shadow-xl p-12 text-center">
               <p className="text-2xl text-gray-500">
@@ -155,31 +157,63 @@ export default function ChefPage() {
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {orderedMenus.map((orderedMenu) => (
-                <OrderedMenuCard
-                  key={orderedMenu.id!}
-                  orderedMenu={orderedMenu}
-                  onComplete={myHandleComplete}
-                />
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-2 gap-6">
+                {/* Left Column */}
+                <div className="space-y-4">
+                  {leftColumn.map((orderedMenu, idx) => (
+                    <OrderedMenuListItem
+                      key={orderedMenu.id!}
+                      orderedMenu={orderedMenu}
+                      index={idx + 1}
+                      onComplete={myHandleComplete}
+                    />
+                  ))}
+                </div>
+
+                {/* Right Column */}
+                <div className="space-y-4">
+                  {rightColumn.map((orderedMenu, idx) => (
+                    <OrderedMenuListItem
+                      key={orderedMenu.id!}
+                      orderedMenu={orderedMenu}
+                      index={idx + 6}
+                      onComplete={myHandleComplete}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Queue Button */}
+              {queuedMenus.length > 0 && (
+                <div className="mt-6 flex justify-center">
+                  <button
+                    onClick={() => setShowQueueModal(true)}
+                    className=" bg-cream text-maroon font-bold px-6 py-3 rounded-lg flex items-center gap-3 transition-colors text-lg shadow-lg"
+                  >
+                    <Clock className="w-6 h-6" />
+                    {queuedMenus.length} Antrian Lagi
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
 
       {/* Confirmation Modal */}
-      {/* <ConfirmationModal
-        isOpen={selectedOrder !== null}
-        orderCode={selectedOrder?.orderCode || ''}
-        onConfirm={handleConfirm}
-        onCancel={handleCancel}
-      /> */}
       <ConfirmationModal
         isOpen={selectedOrderedMenu !== null}
         orderCode={selectedOrderedMenu?.menu.name || ""}
         onConfirm={myHandleConfirm}
         onCancel={myHandleCancel}
+      />
+
+      {/* Queue Info Modal */}
+      <QueueInfoModal
+        isOpen={showQueueModal}
+        queuedMenus={queuedMenus}
+        onClose={() => setShowQueueModal(false)}
       />
     </>
   );
