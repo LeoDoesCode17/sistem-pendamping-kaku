@@ -1,3 +1,4 @@
+// features/packager/components/TransactionCard.tsx
 "use client";
 import { Transaction } from "@/models/transaction";
 import { useEffect, useState } from "react";
@@ -14,13 +15,13 @@ export default function TransactionCard({
 }: TransactionCardProps) {
   const [remainingTime, setRemainingTime] = useState(0);
 
-  // this must be optimized
   useEffect(() => {
     const interval = setInterval(() => {
       const now = new Date().getTime();
       const created = new Date(transaction.timeCreated!).getTime();
       const elapsed = Math.floor((now - created) / 1000);
-      const remaining = Math.max(0, COUNTDOWN_DURATION - elapsed);
+      // Hapus Math.max agar bisa negatif
+      const remaining = COUNTDOWN_DURATION - elapsed;
       setRemainingTime(remaining);
     }, 1000);
 
@@ -28,20 +29,21 @@ export default function TransactionCard({
   }, [transaction.timeCreated]);
 
   const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
+    const isNegative = seconds < 0;
+    const absSeconds = Math.abs(seconds);
+    const mins = Math.floor(absSeconds / 60);
+    const secs = absSeconds % 60;
+    return `${isNegative ? '-' : ''}${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
   const getUrgencyLevel = (seconds: number) => {
-    if (seconds < 180) return "urgent"; // < 3 menit - Merah
+    if (seconds < 180) return "urgent"; // < 3 menit atau sudah lewat - Merah
     if (seconds < 360) return "warning"; // 3-6 menit - Kuning
     return "normal"; // > 6 menit - Hijau
   };
 
   const convertToTimeString = (time: number): string => {
     const date = new Date(time);
-    // Convert to hh:mm (24-hour format)
     const hours = date.getHours().toString().padStart(2, "0");
     const minutes = date.getMinutes().toString().padStart(2, "0");
     return `${hours}:${minutes}`;
@@ -101,7 +103,6 @@ export default function TransactionCard({
           </div>
         ))}
 
-        {/* Show "... X items lagi" jika lebih dari 3 */}
         {hasMore && (
           <div className="px-4 py-3 text-center bg-gray-50">
             <span className="text-gray-600 font-semibold">
@@ -111,7 +112,6 @@ export default function TransactionCard({
         )}
       </div>
 
-      {/* Spacer - untuk push konten ke atas */}
       <div className="flex-grow"></div>
     </button>
   );
