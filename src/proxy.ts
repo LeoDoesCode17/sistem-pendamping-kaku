@@ -9,7 +9,7 @@ const roleHome: Record<string, string> = {
   super_admin: '/super-admin',
 };
 
-export function middleware(req: NextRequest) {
+export function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   // allow public
