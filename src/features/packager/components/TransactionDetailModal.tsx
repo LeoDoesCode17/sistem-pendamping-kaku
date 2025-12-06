@@ -1,3 +1,5 @@
+// src/features/packager/components/TransactionDetailModal.tsx
+
 "use client";
 
 import { Transaction } from "@/models/transaction";
@@ -18,6 +20,7 @@ export default function TransactionDetailModal({
   onClose,
 }: TransactionDetailModalProps) {
   const [remainingTime, setRemainingTime] = useState(0);
+  
   useEffect(() => {
     if (!transaction) return;
 
@@ -25,19 +28,22 @@ export default function TransactionDetailModal({
       const now = new Date().getTime();
       const created = new Date(transaction.timeCreated!).getTime();
       const elapsed = Math.floor((now - created) / 1000);
-      const remaining = Math.max(0, COUNTDOWN_DURATION - elapsed);
+      // Hapus Math.max agar bisa negatif
+      const remaining = COUNTDOWN_DURATION - elapsed;
       setRemainingTime(remaining);
     }, 1000);
 
     return () => clearInterval(interval);
   }, [transaction]);
 
-  if (!isOpen || !transaction) return;
+  if (!isOpen || !transaction) return null;
 
   const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
+    const isNegative = seconds < 0;
+    const absSeconds = Math.abs(seconds);
+    const mins = Math.floor(absSeconds / 60);
+    const secs = absSeconds % 60;
+    return `${isNegative ? '-' : ''}${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
   const getUrgencyLevel = (seconds: number) => {
@@ -48,7 +54,6 @@ export default function TransactionDetailModal({
 
   const convertToTimeString = (time: number): string => {
     const date = new Date(time);
-    // Convert to hh:mm (24-hour format)
     const hours = date.getHours().toString().padStart(2, "0");
     const minutes = date.getMinutes().toString().padStart(2, "0");
     return `${hours}:${minutes}`;
