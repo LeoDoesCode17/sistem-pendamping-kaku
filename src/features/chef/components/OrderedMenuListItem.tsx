@@ -48,17 +48,17 @@ export default function OrderedMenuListItem({
 
   return (
     <div className={`bg-gray-200 rounded-lg p-4 flex items-center justify-between gap-6 border-3 ${getBorderColor(elapsedTime)}`}>
-      <span className="text-xl font-semibold text-gray-800 truncate flex-shrink-0">
+      <span className="text-lg font-semibold text-gray-800 truncate flex-shrink-0">
         {orderedMenu.quantity} x {orderedMenu.menu.name}
       </span>
       
-      <span className={`text-2xl font-bold ${getTimeColor(elapsedTime)} flex-shrink-0`}>
+      <span className={`text-xl font-bold ${getTimeColor(elapsedTime)} flex-shrink-0`}>
         {formatTime(elapsedTime)}
       </span>
       
       <button
         onClick={() => onComplete(orderedMenu.id!)}
-        className="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-6 py-2 rounded-lg flex items-center gap-2 transition-colors flex-shrink-0"
+        className="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-6 py-1 rounded-lg flex items-center gap-2 transition-colors flex-shrink-0"
       >
         <Check className="w-5 h-5" />
         selesai
