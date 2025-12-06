@@ -78,7 +78,8 @@ export default function TransactionCard({
             {transaction.code === "" ? "Tanpa Nama" : transaction.code}
           </h3>
           <p className="text-sm text-gray-700">
-            {convertToTimeString(transaction.timeCreated!)}, {transaction.category}
+            {convertToTimeString(transaction.timeCreated!)},{" "}
+            {transaction.category}
           </p>
         </div>
         <div className={`text-4xl font-black ${timeColors[urgency]}`}>
@@ -94,7 +95,8 @@ export default function TransactionCard({
             className="px-4 py-3 border-b last:border-b-0 border-gray-200"
           >
             <div className="font-semibold text-gray-800">
-              {item.quantity} x {item.menu.name} 
+              {item.quantity} x {item.menu.name} - ({" "}
+              {item.isDone ? "DIMASAK" : "BELUM DIMASAK"} )
             </div>
           </div>
         ))}
