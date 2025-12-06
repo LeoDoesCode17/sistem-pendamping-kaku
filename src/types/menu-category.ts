@@ -2,7 +2,9 @@ export enum MenuCategory {
   Gorengan = "GORENGAN",
   Rebusan = "REBUSAN",
   Minuman = "MINUMAN",
-  Cimol = "CIMOL",
+  Cireng = "CIRENG",
   Pisang = "PISANG",
   Sambal = "SAMBAL",
+  SetengahMatang = "SETENGAH MATANG",
 }
+
