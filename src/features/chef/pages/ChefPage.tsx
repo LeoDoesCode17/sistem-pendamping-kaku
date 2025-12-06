@@ -189,9 +189,9 @@ export default function ChefPage() {
                 <div className="mt-6 flex justify-center">
                   <button
                     onClick={() => setShowQueueModal(true)}
-                    className=" bg-cream text-maroon font-bold px-6 py-3 rounded-lg flex items-center gap-3 transition-colors text-lg shadow-lg"
+                    className=" bg-cream text-maroon font-bold px-4 py-2 rounded-lg flex items-center gap-3 transition-colors text-base shadow-lg"
                   >
-                    <Clock className="w-6 h-6" />
+                    <Clock className="w-5 h-5" />
                     {queuedMenus.length} Antrian Lagi
                   </button>
                 </div>
