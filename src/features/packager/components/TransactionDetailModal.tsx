@@ -37,13 +37,13 @@ export default function TransactionDetailModal({
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
   const getUrgencyLevel = (seconds: number) => {
-    if (seconds < 180) return 'urgent';
-    if (seconds < 360) return 'warning';
-    return 'normal';
+    if (seconds < 180) return "urgent";
+    if (seconds < 360) return "warning";
+    return "normal";
   };
 
   const convertToTimeString = (time: number): string => {
@@ -57,38 +57,43 @@ export default function TransactionDetailModal({
   const urgency = getUrgencyLevel(remainingTime);
 
   const headerColors = {
-    urgent: 'bg-red-300',
-    warning: 'bg-yellow-300',
-    normal: 'bg-green-300'
+    urgent: "bg-red-300",
+    warning: "bg-yellow-300",
+    normal: "bg-green-300",
   };
 
   const timeColors = {
-    urgent: 'text-red-800',
-    warning: 'text-yellow-800',
-    normal: 'text-green-800'
+    urgent: "text-red-800",
+    warning: "text-yellow-800",
+    normal: "text-green-800",
   };
 
   const buttonColors = {
-    urgent: 'bg-red-800 hover:bg-red-900',
-    warning: 'bg-yellow-700 hover:bg-yellow-800',
-    normal: 'bg-green-700 hover:bg-green-800'
+    urgent: "bg-red-800 hover:bg-red-900",
+    warning: "bg-yellow-700 hover:bg-yellow-800",
+    normal: "bg-green-700 hover:bg-green-800",
   };
 
   return (
-    <div 
+    <div
       className="fixed inset-0 bg-white/30 backdrop-blur-sm flex items-center justify-center z-50 p-4"
       onClick={onClose}
     >
-      <div 
+      <div
         className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className={`${headerColors[urgency]} px-6 py-4 flex items-center justify-between flex-shrink-0`}>
+        <div
+          className={`${headerColors[urgency]} px-6 py-4 flex items-center justify-between flex-shrink-0`}
+        >
           <div>
-            <h3 className="text-3xl font-bold text-gray-800">{transaction.code === "" ? "Tanpa Nama" : transaction.code}</h3>
+            <h3 className="text-3xl font-bold text-gray-800">
+              {transaction.code === "" ? "Tanpa Nama" : transaction.code}
+            </h3>
             <p className="text-sm text-gray-700 mt-1">
-            {convertToTimeString(transaction.timeCreated!)}, {transaction.category}
+              {convertToTimeString(transaction.timeCreated!)},{" "}
+              {transaction.category}
             </p>
           </div>
           <div className={`text-5xl font-black ${timeColors[urgency]}`}>
@@ -108,7 +113,8 @@ export default function TransactionDetailModal({
                 className="bg-gray-50 rounded-lg px-4 py-3 border border-gray-200"
               >
                 <div className="font-semibold text-gray-800 text-lg">
-                  {item.quantity} x {item.menu.name} 
+                  {item.quantity} x {item.menu.name} - ({" "}
+                  {item.isDone ? "DIMASAK" : "BELUM DIMASAK"} )
                 </div>
               </div>
             ))}
